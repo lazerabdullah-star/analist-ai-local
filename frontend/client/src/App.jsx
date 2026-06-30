@@ -232,6 +232,15 @@ export default function App() {
   const [siralama, setSiralama]         = useState('asc')
   const [aktifFiltreler, setAktifFiltreler] = useState(new Set())
 
+  const liste = useMemo(() => {
+    const filtreli = tumIsletmeler.filter(b => filtreGec(b, aktifFiltreler))
+    return [...filtreli].sort((a, b) =>
+      siralama === 'asc'
+        ? a.completeness_score - b.completeness_score
+        : b.completeness_score - a.completeness_score
+    )
+  }, [tumIsletmeler, siralama, aktifFiltreler])
+
   if (sayfa === 'dashboard') return (
     <div>
       <div style={{ background: '#0F172A', padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -260,15 +269,6 @@ export default function App() {
       return s
     })
   }
-
-  const liste = useMemo(() => {
-    const filtreli = tumIsletmeler.filter(b => filtreGec(b, aktifFiltreler))
-    return [...filtreli].sort((a, b) =>
-      siralama === 'asc'
-        ? a.completeness_score - b.completeness_score
-        : b.completeness_score - a.completeness_score
-    )
-  }, [tumIsletmeler, siralama, aktifFiltreler])
 
   const tara = async () => {
     const sorgular = [
