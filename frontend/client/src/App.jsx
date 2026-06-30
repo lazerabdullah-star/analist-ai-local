@@ -220,7 +220,17 @@ function IsletmeKarti({ isletme, index }) {
 }
 
 export default function App() {
-  const [sayfa, setSayfa] = useState('tarayici') // 'tarayici' | 'dashboard'
+  const [sayfa, setSayfa] = useState('tarayici')
+  const [sehir, setSehir]           = useState('İstanbul')
+  const [ilce, setIlce]             = useState('')
+  const [kategoriYazisi, setKategoriYazisi] = useState('')
+  const [secilenler, setSecilenler] = useState(new Set())
+  const [yukleniyor, setYukleniyor] = useState(false)
+  const [tumIsletmeler, setTumIsletmeler] = useState([])
+  const [hata, setHata]             = useState('')
+  const [tarandiMi, setTarandiMi]   = useState(false)
+  const [siralama, setSiralama]         = useState('asc')
+  const [aktifFiltreler, setAktifFiltreler] = useState(new Set())
 
   if (sayfa === 'dashboard') return (
     <div>
@@ -234,18 +244,6 @@ export default function App() {
       <Dashboard />
     </div>
   )
-
-  const [sehir, setSehir]           = useState('İstanbul')
-  const [ilce, setIlce]             = useState('')
-  const [kategoriYazisi, setKategoriYazisi] = useState('')
-  const [secilenler, setSecilenler] = useState(new Set())
-  const [yukleniyor, setYukleniyor] = useState(false)
-  const [tumIsletmeler, setTumIsletmeler] = useState([])
-  const [hata, setHata]             = useState('')
-  const [tarandiMi, setTarandiMi]   = useState(false)
-
-  const [siralama, setSiralama]         = useState('asc')
-  const [aktifFiltreler, setAktifFiltreler] = useState(new Set())
 
   const kategoriToggle = (k) => {
     setSecilenler(prev => {
