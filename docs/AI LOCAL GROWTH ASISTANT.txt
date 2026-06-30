@@ -1,0 +1,420 @@
+AI Local Growth Assistant
+(Kod Adı: Analist AI Local)
+
+İçindekiler;
+01 - Proje Vizyonu
+02 - Çözülen Problem
+03 - Hedef Müşteri
+04 - Ürün Özellikleri
+05 - Kullanıcı Senaryoları
+06 - Rakip Analizi
+07 - Gelir Modeli
+08 - Sistem Mimarisi
+09 - AI Motoru
+10 - Google Entegrasyonu
+11 - Veritabanı
+12 - API Yapısı
+13 - Arayüz Tasarımı
+14 - Yol Haritası
+15 - Riskler ve Çözümler
+16 - Maliyet Analizi
+17 - Pazarlama Stratejisi
+18 - Gelecek Versiyonlar
+
+
+
+
+
+
+01	. PROJE VİZYONU
+
+01.1 Projenin Amacı
+ Analist AI Local, küçük ve orta ölçekli işletmelerin dijital dünyadaki görünürlüğünü artırmak, müşteri etkileşimini güçlendirmek ve yapay zekâ destekli önerilerle sürdürülebilir büyüme sağlamalarına yardımcı olan abonelik tabanlı bir SaaS platformudur.
+Platform; işletmelerin Google İşletme Profili başta olmak üzere dijital varlıklarını sürekli analiz eder, eksiklikleri tespit eder, gelişim fırsatlarını belirler ve işletme sahibine uygulanabilir öneriler sunar.
+Amacımız yalnızca rapor üretmek değil, işletmeler için her gün çalışan dijital bir analiz ve büyüme asistanı oluşturmaktır.
+
+01.2	Neden Böyle Bir Ürün?
+ Binlerce işletme Google profilini yıllarca güncellemiyor. 
+•	Gelen yorumlara cevap vermiyor. 
+•	Fotoğraf yüklemiyor. 
+•	Rakiplerinin ne yaptığını takip etmiyor. 
+•	SEO nedir bilmiyor. 
+•	Dijital pazarlamaya bütçe ayıramıyor. 
+•	Danışman tutacak bütçesi de yok. 
+
+
+
+
+
+
+
+01.3	VİZYON
+Türkiye'deki her küçük işletmenin yanında, 7/24 çalışan ve işletmenin dijital gelişimini takip eden bir yapay zekâ asistanı oluşturmak. Şimdilik sadece google.
+Yarın;
+•	Instagram 
+•	Facebook 
+•	TikTok 
+•	Web sitesi 
+•	Reklamlar 
+•	SEO 
+•	CRM 
+•	Satış
+
+01.4	MİSYON
+Analist AI Local, küçük ve orta ölçekli işletmeler için dijital varlıklarını analiz eden, eksikleri tespit eden ve yapay zekâ destekli büyüme önerileri sunan abonelik tabanlı bir SaaS platformudur. İşletme sahiplerinin teknik bilgiye ihtiyaç duymadan dijital dünyada başarılı olmalarını sağlayacak, anlaşılır ve uygulanabilir yapay zekâ önerileri sunmak.
+
+
+
+
+
+01.5	UZUN VADELİ HEDEF
+Analist AI Local'i Türkiye'nin KOBİ'ler için en kapsamlı yapay zekâ destekli dijital büyüme platformu haline getirmek ve ilerleyen yıllarda uluslararası pazarlara açılabilecek ölçeklenebilir bir SaaS ürünü oluşturmak.	
+
+01.6 Temel İlkeler
+1. İşletme Odaklılık
+Platformdaki her özellik, işletmeye ölçülebilir bir fayda sağlamalıdır. Kullanıcıyı gereksiz verilerle yormak yerine, uygulanabilir öneriler sunmalıdır.
+________________________________________
+2. Yapay Zekâ Destekli Karar Mekanizması
+Yapay zekâ işletme sahibi yerine karar vermez. Mevcut verileri analiz eder, fırsatları ve riskleri belirler, kullanıcıya en uygun önerileri sunar.
+________________________________________
+3. Basitlik
+Teknik bilgiye sahip olmayan kullanıcılar bile sistemi rahatlıkla kullanabilmelidir. Karmaşık analizler, anlaşılır bir dille sunulmalıdır.
+________________________________________
+
+
+4. Sürekli Analiz
+Platform yalnızca anlık rapor üretmez. İşletmenin dijital performansını sürekli izler ve önemli değişiklikleri kullanıcıya bildirir.
+________________________________________
+5. Ölçeklenebilirlik
+Sistem modüler olarak tasarlanacaktır. İlk aşamada Google İşletme Profili ile başlayacak, ilerleyen sürümlerde sosyal medya, SEO, web sitesi, reklam yönetimi ve farklı platformlar sisteme kolayca entegre edilebilecektir.
+________________________________________
+6. Veri Güvenliği
+Kullanıcı verileri güvenli şekilde saklanacak, gerekli izinler dışında hiçbir bilgi üçüncü kişilerle paylaşılmayacaktır.
+________________________________________
+7. Sürekli Gelişim
+Platform; kullanıcı geri bildirimleri, yeni teknolojiler ve değişen dijital pazarlama ihtiyaçları doğrultusunda düzenli olarak geliştirilecektir.
+
+02 - ÇÖZÜLEN PROBLEM
+02.1 Günümüz İşletmelerinin Dijital Gerçekliği
+Dijital dönüşümün hız kazanmasıyla birlikte tüketicilerin bir işletme hakkında edindiği ilk izlenim artık fiziksel mağazada değil, internet ortamında oluşmaktadır. Bir işletmenin Google aramalarındaki görünürlüğü, müşteri yorumları, fotoğrafları, çalışma saatleri ve genel dijital varlığı, potansiyel müşterilerin satın alma kararını doğrudan etkileyen unsurlar haline gelmiştir.
+Büyük işletmeler bu süreci yönetebilmek için pazarlama ekipleri, dijital ajanslar ve profesyonel danışmanlarla çalışabilmektedir. Ancak küçük ve orta ölçekli işletmeler (KOBİ'ler) çoğu zaman bu kaynaklara sahip değildir. İşletme sahibi; satış, muhasebe, personel yönetimi ve operasyonel süreçlerle ilgilenirken dijital varlığını düzenli olarak yönetmeye yeterli zaman ayıramamaktadır.
+Sonuç olarak birçok işletme, dijital dünyada sahip olduğu potansiyeli kullanamamakta ve farkında olmadan müşteri kaybetmektedir.
+________________________________________
+02.2 İşletmelerin Karşılaştığı Temel Sorunlar
+Yapılan gözlemler doğrultusunda küçük ve orta ölçekli işletmelerin en sık karşılaştığı problemler aşağıda özetlenmiştir.
+Google İşletme Profili Düzenli Yönetilmiyor
+Birçok işletme Google İşletme Profilini yalnızca açılış aşamasında oluşturmakta, daha sonra ise uzun süre güncellememektedir. Değişen çalışma saatleri, yeni hizmetler, kampanyalar veya iletişim bilgileri zamanında sisteme işlenmemektedir.
+Müşteri Yorumları Cevapsız Kalıyor
+Olumlu veya olumsuz müşteri yorumlarına cevap verilmemesi, işletmenin müşterileriyle ilgilenmediği algısını oluşturabilmektedir. Özellikle olumsuz yorumların yanıtsız bırakılması, potansiyel müşterilerin güvenini azaltabilmektedir.
+Görsel İçerik Eksikliği
+İşletmelerin önemli bir kısmı düzenli olarak fotoğraf veya video paylaşımı yapmamaktadır. Güncel olmayan görseller, işletmenin aktif olmadığı izlenimi oluşturabilmektedir.
+Teknik Bilgi Eksikliği
+Birçok işletme sahibi SEO, Google sıralama kriterleri, dijital görünürlük veya kullanıcı deneyimi gibi konularda yeterli bilgiye sahip değildir. Bu nedenle hangi eksiklerin müşteri kaybına neden olduğunu fark edememektedir.
+Zaman Yetersizliği
+İşletme sahipleri günlük operasyonlarla yoğun şekilde ilgilendiği için dijital platformlarını düzenli olarak kontrol etmeye vakit bulamamaktadır.
+Profesyonel Hizmetlerin Maliyeti
+Dijital pazarlama ajansları ve danışmanlık hizmetleri birçok küçük işletme için yüksek maliyet oluşturabilmektedir. Bu nedenle işletmeler profesyonel destek alamamakta veya kısa süreli çalışmalarla yetinmektedir.
+________________________________________
+02.3 Bu Sorunların İşletmelere Etkisi
+Yukarıda belirtilen eksiklikler yalnızca dijital görünürlüğü azaltmakla kalmaz, aynı zamanda işletmenin ticari performansını da doğrudan etkiler.
+Başlıca etkiler şunlardır:
+•	Potansiyel müşteri kaybı
+•	Google Haritalar görünürlüğünün azalması
+•	Rakip işletmelerin öne çıkması
+•	Marka güvenilirliğinin zayıflaması
+•	Olumsuz müşteri algısının oluşması
+•	Daha düşük dönüşüm oranları
+•	Rekabet avantajının kaybedilmesi
+İşletme sahipleri çoğu zaman bu kayıpların nedenini fark edememekte, sorunun dijital varlıklarının yetersiz yönetiminden kaynaklandığını görememektedir.
+________________________________________
+02.4 Mevcut Çözümlerin Yetersizliği
+Bugün işletmeler dijital varlıklarını yönetebilmek için farklı yöntemlere başvurmaktadır. Ancak mevcut çözümler çoğu zaman sürdürülebilir değildir.
+En yaygın yöntemler şunlardır:
+•	Dijital pazarlama ajanslarından hizmet almak,
+•	Serbest çalışan uzmanlarla çalışmak,
+•	Ücretsiz analiz araçlarını kullanmak,
+•	Süreci tamamen işletme sahibinin takip etmesi.
+Bu yöntemlerin ortak dezavantajları bulunmaktadır:
+•	Sürekli takip gerektirmeleri,
+•	Yüksek maliyet oluşturabilmeleri,
+•	Teknik bilgi istemeleri,
+•	Farklı platformlarda dağınık çalışmaları,
+•	Yapay zekâ destekli kişiselleştirilmiş öneriler sunmamaları.
+Bu nedenle küçük işletmeler için daha erişilebilir, anlaşılır ve sürekli çalışan bir çözüme ihtiyaç duyulmaktadır.
+________________________________________
+02.5 Analist AI Local'in Getirdiği Çözüm
+Analist AI Local, işletmelerin dijital varlıklarını belirli aralıklarla analiz eden, eksiklikleri otomatik olarak tespit eden ve yapay zekâ destekli öneriler sunan bir dijital büyüme asistanı olarak tasarlanmıştır.
+Platformun temel amacı yalnızca mevcut durumu raporlamak değildir. Aynı zamanda işletme sahibine uygulanabilir aksiyonlar sunarak dijital gelişim sürecini sürekli desteklemektir.
+İlk sürümde odak noktası Google İşletme Profili olacaktır. İlerleyen sürümlerde web sitesi analizi, sosyal medya hesapları, SEO performansı, rakip analizi, reklam performansı ve diğer dijital kanallar da sisteme entegre edilerek tek bir platform üzerinden yönetilebilecektir.
+________________________________________
+02.6 Sonuç
+Küçük ve orta ölçekli işletmelerin dijital dünyadaki başarısı artık yalnızca sundukları ürün veya hizmete değil, dijital varlıklarını ne kadar etkin yönettiklerine de bağlıdır.
+Zaman, bütçe ve teknik bilgi eksikliği nedeniyle birçok işletme dijital fırsatları değerlendirememekte ve rekabette geri kalmaktadır.
+Analist AI Local, bu boşluğu yapay zekâ destekli analiz, sürekli takip ve uygulanabilir öneriler sunarak doldurmayı hedeflemektedir. Böylece işletmeler, dijital pazarlama konusunda uzmanlaşmak zorunda kalmadan çevrim içi görünürlüklerini artırabilecek ve sürdürülebilir büyüme sağlayabilecektir.
+
+03 - HEDEF MÜŞTERİ
+03.1 Hedef Müşteri Belirleme Stratejisi
+Analist AI Local, uzun vadede tüm küçük ve orta ölçekli işletmelere hizmet verebilecek şekilde tasarlanacak bir SaaS platformudur. Ancak ürün geliştirme sürecinde başarılı bir başlangıç yapabilmek için ilk aşamada belirli sektörlere odaklanılması hedeflenmektedir.
+Bu yaklaşımın temel amacı; ürünün belirli bir kullanıcı grubunun ihtiyaçlarına göre geliştirilmesini sağlamak, kullanıcı geri bildirimlerini daha doğru analiz etmek ve pazara daha güçlü bir giriş yapmaktır.
+İlk sürümde tüm sektörlere aynı anda hitap etmek yerine, dijital görünürlüğün doğrudan müşteri kazanımını etkilediği sektörler öncelikli olarak değerlendirilecektir.
+________________________________________
+03.2 Hedef Müşteri Kriterleri
+Bir sektörün hedef müşteri olarak belirlenebilmesi için aşağıdaki kriterler dikkate alınacaktır.
+•	Google İşletme Profilini aktif olarak kullanıyor olması.
+•	Google yorumlarının müşteri kararlarını doğrudan etkilemesi.
+•	Yerel aramalarda görünürlüğün önemli olması.
+•	Dijital pazarlama konusunda desteğe ihtiyaç duyması.
+•	Düzenli olarak yeni müşteri kazanma ihtiyacının bulunması.
+•	Yapay zekâ destekli önerilerden fayda sağlayabilecek operasyon yapısına sahip olması.
+•	Abonelik modeliyle çalışabilecek ekonomik potansiyele sahip olması.
+________________________________________
+03.3 Öncelikli Sektörler
+İlk değerlendirmeye göre aşağıdaki sektörler ürünün ilk hedef kitlesi olarak değerlendirilecektir.
+•	Diş Hekimleri
+•	Oto Servisleri
+•	Elektrikçiler
+•	Tesisat Firmaları
+•	Restoranlar
+•	Kafeler
+•	Kuaför ve Güzellik Merkezleri
+•	Veteriner Klinikleri
+•	Spor Salonları
+•	Özel Sağlık Kuruluşları
+Bu liste proje ilerledikçe yapılan pazar araştırmaları ve kullanıcı geri bildirimleri doğrultusunda güncellenebilecektir.
+________________________________________
+03.4 Sektör Değerlendirme Modeli
+İlk sürümde hangi sektörlere öncelik verileceği aşağıdaki kriterlere göre puanlanacaktır.
+Değerlendirme Kriteri	Açıklama
+Google yorumlarının önemi	Müşteri kararını ne kadar etkiliyor?
+Yerel rekabet seviyesi	Rakip yoğunluğu ne durumda?
+Dijital görünürlüğün etkisi	Google'da görünmek satışları ne kadar etkiliyor?
+Yapay zekâ desteğine ihtiyaç	Günlük iş yükü nedeniyle dijital yönetim desteğine ihtiyaç duyuyor mu?
+Abonelik ödeme potansiyeli	Aylık abonelik modeline uygun mu?
+Bu değerlendirme sonucunda en yüksek puanı alan sektörler MVP (Minimum Viable Product) sürümünün ilk kullanıcı kitlesini oluşturacaktır.
+________________________________________
+03.5 Uzun Vadeli Hedef Müşteri
+Ürün olgunlaştıkça sektör bağımsız bir yapıya dönüşecektir.
+Uzun vadede Analist AI Local;
+•	Yerel işletmeler,
+•	Hizmet sektörü,
+•	Sağlık kuruluşları,
+•	Perakende işletmeleri,
+•	Eğitim kurumları,
+•	Turizm işletmeleri,
+•	Franchise yapıları,
+•	Zincir mağazalar
+başta olmak üzere dijital görünürlüğe ihtiyaç duyan tüm işletmelere hizmet verebilecek şekilde geliştirilecektir.
+
+
+
+
+03.6 ÜRÜN DENEYİMİ (PRODUCT EXPERIENCE)
+Amaç
+Analist AI Local'in temel amacı yalnızca işletmeye ait verileri göstermek değildir. Platform, elde edilen verileri yapay zekâ yardımıyla analiz ederek işletme sahibine anlaşılır, uygulanabilir ve önceliklendirilmiş öneriler sunmayı hedeflemektedir.
+Bu yaklaşım sayesinde kullanıcı, onlarca grafik ve rapor arasında kaybolmak yerine işletmesi için gerçekten önemli olan bilgileri tek ekranda görebilecektir.
+________________________________________
+Ürün Deneyimi Yaklaşımı
+Analist AI Local, klasik raporlama araçlarından farklı olarak işletme sahibine yalnızca sayısal veriler sunmaz.
+Platform;
+•	Verileri toplar,
+•	Analiz eder,
+•	Birbiriyle ilişkilendirir,
+•	Riskleri belirler,
+•	Fırsatları tespit eder,
+•	Öncelikleri sıralar,
+•	Kullanıcının uygulayabileceği öneriler üretir.
+Bu sayede kullanıcı, yalnızca "Ne oldu?" sorusunun cevabını değil;
+•	Neden oldu?
+•	İşletmeyi nasıl etkiliyor?
+•	Şimdi ne yapmalıyım?
+•	Öncelikli görevim nedir?
+sorularının cevaplarını da aynı ekranda görebilecektir.
+________________________________________
+Kullanıcının İlk Karşılaşacağı Ekran
+Kullanıcı sisteme giriş yaptığında karşısına klasik bir istatistik paneli yerine, işletmesini sürekli takip eden dijital bir yapay zekâ asistanı çıkacaktır.
+Ana ekranın amacı; işletmenin o anki durumunu birkaç saniye içerisinde özetlemek ve kullanıcının dikkat etmesi gereken konuları öncelik sırasına göre göstermektir.
+Örnek bir karşılama ekranı aşağıdaki gibi olacaktır.
+"Günaydın Abdullah.
+İşletmenizi analiz ettim.
+• Profil görüntülenmeniz son 7 günde %18 arttı.
+• Google üzerinden 11 yeni telefon araması aldınız.
+• 2 yeni müşteri yorumu eklendi.
+• Cevap bekleyen 3 yorumunuz bulunuyor.
+• Son fotoğrafınızı 42 gün önce yüklediniz.
+• Rakibiniz bu hafta 7 yeni fotoğraf ekledi.
+Bugün ilk olarak bekleyen yorumları cevaplamanızı ve yeni fotoğraf yüklemenizi öneriyorum."
+Bu yapı sayesinde kullanıcı, sisteme giriş yaptığı ilk anda işletmesinin genel durumunu ve öncelikli aksiyonlarını birkaç saniye içerisinde anlayabilecektir.
+________________________________________
+Yapay Zekânın Rolü
+Analist AI Local'de yapay zekâ yalnızca sohbet eden bir yardımcı değildir.
+Yapay zekâ;
+•	Dijital performansı analiz eder.
+•	Geçmiş verilerle karşılaştırmalar yapar.
+•	Eğilimleri (trendleri) belirler.
+•	Kritik değişiklikleri tespit eder.
+•	Riskleri önceden bildirir.
+•	Yapılabilecek iyileştirmeleri önceliklendirir.
+•	İşletme sahibine uygulanabilir görevler oluşturur.
+Bu yaklaşım sayesinde platform, pasif bir raporlama sistemi olmaktan çıkarak aktif bir dijital danışman görevi üstlenecektir.
+________________________________________
+Tasarım Felsefesi
+Platform geliştirilirken aşağıdaki temel prensipler esas alınacaktır.
+•	Kullanıcı bilgiye en fazla 10 saniye içerisinde ulaşabilmelidir.
+•	Karmaşık grafikler yerine anlamlı özetler sunulmalıdır.
+•	Sayısal veriler mutlaka yapay zekâ yorumlarıyla desteklenmelidir.
+•	Kritik uyarılar öncelik sırasına göre gösterilmelidir.
+•	Günlük yapılması gereken işlemler açık şekilde listelenmelidir.
+•	Tüm ekranlar teknik bilgi gerektirmeden kullanılabilecek sadelikte tasarlanmalıdır.
+________________________________________
+Sonuç
+Analist AI Local'in temel farkı, yalnızca işletme verilerini göstermek değil; bu verileri yorumlayarak işletme sahibinin doğru kararları daha hızlı almasına yardımcı olmaktır.
+Platformun hedefi, kullanıcıya her gün işletmesini takip eden deneyimli bir dijital danışman hissi yaşatmak ve dijital büyüme sürecini sürekli desteklemektir.
+
+________________________________________
+03.7 Hedef Müşteri Profili (Persona)
+İlk sürümde hedeflenen tipik kullanıcı profili aşağıdaki gibidir.
+İşletme Sahibi veya Yönetici
+•	Yaş: 30-60
+•	Teknoloji bilgisi: Orta seviye
+•	Günlük operasyonlarla yoğun şekilde ilgilenmektedir.
+•	Dijital pazarlamaya yeterli zaman ayıramamaktadır.
+•	Yeni müşteri kazanmak istemektedir.
+•	Google yorumlarının öneminin farkındadır ancak düzenli takip edememektedir.
+•	Basit, anlaşılır ve uygulanabilir öneriler beklemektedir.
+Bu kullanıcı profili, ürün tasarımı ve kullanıcı deneyimi geliştirilirken temel referans olarak kullanılacaktır.
+________________________________________
+03.8 Bölüm Sonucu
+Analist AI Local, ilk aşamada belirli sektörlere odaklanarak ürün-pazar uyumunu (Product-Market Fit) sağlamayı hedeflemektedir. Kullanıcı geri bildirimleri doğrultusunda geliştirilecek olan platform, ilerleyen sürümlerde farklı sektörleri de kapsayacak şekilde genişletilecektir.
+Bu strateji sayesinde hem ürün geliştirme süreci daha kontrollü ilerleyecek hem de pazarlama faaliyetleri daha verimli yürütülebilecektir.
+
+04 - ÜRÜN ÖZELLİKLERİ
+04.1 Genel Bakış
+Analist AI Local, küçük ve orta ölçekli işletmelerin dijital varlıklarını tek bir platform üzerinden analiz etmelerini, yönetmelerini ve geliştirmelerini sağlayan yapay zekâ destekli bir SaaS platformudur.
+Platformun temel amacı yalnızca veri göstermek değil, verileri analiz ederek işletme sahibine uygulanabilir öneriler sunmaktır.
+İlk sürüm (MVP), Google İşletme Profili üzerine odaklanacaktır. İlerleyen sürümlerde farklı dijital platformlar sisteme entegre edilecektir.
+________________________________________
+04.2 Ana Özellikler
+Ana Gösterge Paneli (Dashboard)
+•	İşletme Sağlık Puanı (Analist Score)
+•	Günlük AI Özeti
+•	Son analiz tarihi
+•	Kritik uyarılar
+•	Günlük yapılacak görevler
+•	Performans özeti
+________________________________________
+Google İşletme Profili Analizi
+•	Profil bilgilerinin kontrol edilmesi
+•	Eksik alanların tespiti
+•	Fotoğraf analizi
+•	Çalışma saatlerinin kontrolü
+•	Hizmet bilgilerinin analizi
+•	Açıklama metni analizi
+________________________________________
+Müşteri Yorumları Yönetimi
+•	Yeni yorumların listelenmesi
+•	Cevapsız yorumların tespiti
+•	Ortalama puan analizi
+•	Yapay zekâ destekli cevap önerileri
+•	Yorum eğilimlerinin analizi
+________________________________________
+Rakip Analizi
+•	Rakip işletmelerin karşılaştırılması
+•	Fotoğraf sayısı karşılaştırması
+•	Ortalama puan karşılaştırması
+•	Yorum sayısı karşılaştırması
+•	Profil güncellik analizi
+________________________________________
+AI Analiz ve Öneri Sistemi
+Platformun en önemli özelliği, verileri analiz ederek kullanıcıya yorum sunmasıdır.
+Yapay zekâ;
+•	Verileri analiz eder.
+•	Eksiklikleri belirler.
+•	Öncelikli görevleri oluşturur.
+•	Gelişim fırsatlarını tespit eder.
+•	Günlük öneriler sunar.
+________________________________________
+Raporlama
+•	Günlük raporlar
+•	Haftalık raporlar
+•	Aylık performans raporları
+•	PDF çıktıları
+________________________________________
+Bildirim Sistemi
+•	Yeni yorum bildirimi
+•	Kritik değişiklik bildirimi
+•	Fotoğraf hatırlatmaları
+•	Güncelleme önerileri
+•	Haftalık AI özeti
+________________________________________
+04.3 Gelecek Sürümler
+İlerleyen sürümlerde aşağıdaki modüllerin sisteme eklenmesi planlanmaktadır.
+•	Web sitesi analizi
+•	SEO analizi
+•	Instagram analizi
+•	Facebook analizi
+•	Reklam performans analizi
+•	WhatsApp bildirimleri
+•	CRM entegrasyonu
+•	Çok şubeli işletme yönetimi
+•	Mobil uygulama
+•	Gelişmiş AI danışmanı
+
+05 - KULLANICI SENARYOLARI
+Senaryo 1 – Yeni Kullanıcı
+İşletme sahibi sisteme kayıt olur.
+Google İşletme Profilini sisteme bağlar.
+Yapay zekâ ilk analizi gerçekleştirir.
+İlk rapor oluşturulur.
+Kullanıcı dashboard ekranında işletmesinin genel durumunu görür.
+________________________________________
+Senaryo 2 – Günlük Kullanım
+Kullanıcı sabah sisteme giriş yapar.
+Dashboard ekranında AI tarafından hazırlanan günlük özeti görüntüler.
+Yeni yorumları inceler.
+Yapay zekânın önerdiği görevleri tamamlar.
+İşletme Sağlık Puanındaki değişimi takip eder.
+________________________________________
+Senaryo 3 – Haftalık Kontrol
+Platform haftalık analiz oluşturur.
+Yeni gelişmeler raporlanır.
+Eksikler belirlenir.
+Yapay zekâ yeni öneriler oluşturur.
+Kullanıcı PDF raporunu indirebilir veya e-posta ile paylaşabilir.
+________________________________________
+Senaryo 4 – Sürekli Gelişim
+Platform işletmenin gelişimini düzenli olarak takip eder.
+Yapılan iyileştirmeleri analiz eder.
+Yeni fırsatlar oluştuğunda kullanıcıyı bilgilendirir.
+Böylece işletmenin dijital görünürlüğü sürekli geliştirilmeye çalışılır.
+
+06 - RAKİP ANALİZİ
+Genel Değerlendirme
+Piyasada Google İşletme Profili analizi yapan çeşitli araçlar bulunmaktadır. Ancak bu araçların büyük bölümü teknik veriler sunmakta, kullanıcıya uygulanabilir öneriler üretmemektedir.
+Analist AI Local'in temel farkı, verileri yalnızca göstermek yerine yapay zekâ ile yorumlaması ve işletme sahibine öncelikli aksiyonlar sunmasıdır.
+________________________________________
+Rakiplerin Güçlü Yönleri
+•	Veri toplama
+•	Performans raporları
+•	İstatistik ekranları
+•	Grafikler
+•	Temel analizler
+________________________________________
+Rakiplerin Zayıf Yönleri
+•	Karmaşık arayüzler
+•	Teknik bilgi gerektirmesi
+•	Yapay zekâ yorumlarının yetersiz olması
+•	Görev yönetiminin bulunmaması
+•	İşletmeye özel önerilerin sınırlı olması
+________________________________________
+Analist AI Local'in Farkı
+Platform;
+•	Veriyi yorumlar.
+•	Öncelikleri belirler.
+•	Günlük görevler oluşturur.
+•	İşletmenin dijital gelişimini sürekli takip eder.
+•	Kullanıcıya dijital danışman deneyimi sunar.
+________________________________________
+Rekabet Avantajı
+Analist AI Local'in en önemli rekabet avantajı, işletme sahibinin dijital pazarlama uzmanı olmasını gerektirmeden, yapay zekâ destekli önerilerle işletmesini geliştirebilmesini sağlamaktır.
+Platformun uzun vadeli hedefi, yalnızca Google İşletme Profili analizi yapan bir araç değil, işletmeler için dijital büyüme süreçlerini yöneten kapsamlı bir yapay zekâ platformu olmaktır.
+

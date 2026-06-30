@@ -1,0 +1,22 @@
+# Gizli dosyalar
+.env
+.env.local
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+
+# Veritabanı
+database/*.db
+
+# Node
+frontend/client/node_modules/
+
+# Editor
+.vscode/
+.idea/
+*.DS_Store
