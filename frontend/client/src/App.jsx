@@ -1,6 +1,8 @@
 import { useState, useMemo } from 'react'
 import Dashboard from './Dashboard'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+
 function excelIndir(isletmeler, sehir, ilce) {
   const baslik = [
     'İşletme Adı', 'Telefon', 'Web Sitesi', 'Adres', 'Şehir', 'İlçe',
@@ -288,7 +290,7 @@ export default function App() {
     for (const sorgu of sorgular) {
       const aramaMetni = ilce.trim() ? `${sorgu} ${ilce} ${sehir}` : `${sorgu} ${sehir}`
       try {
-        const res = await fetch('http://127.0.0.1:8000/scan', {
+        const res = await fetch(`${API_URL}/scan`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ city: sehir, category: aramaMetni, max_results: 20 })

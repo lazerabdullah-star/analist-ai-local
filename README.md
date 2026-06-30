@@ -15,8 +15,8 @@ KOBİ'lerin Google İşletme Profili eksikliklerini tespit eden ve müşteri ada
 ### 1. Repoyu klonla
 
 ```bash
-git clone https://github.com/KULLANICI_ADI/ai_asistan.git
-cd ai_asistan
+git clone https://github.com/lazerabdullah-star/analist-ai-local.git
+cd analist-ai-local
 ```
 
 ### 2. API anahtarlarını ayarla
@@ -76,6 +76,25 @@ Frontend çalışınca: http://localhost:5173
 2. **Filtrele** — Telefonu yok / fotoğrafı yok gibi kriterlere göre filtrele
 3. **Excel'e İndir** — Satış listeni indir
 4. **Müşteri Ekranı** — Abonelik alan işletmenin göreceği dashboard (sağ üstteki buton)
+
+## Canlıya Alma (İnternet Linki ile Paylaşma)
+
+Kurulum yapmadan herkesin tarayıcıdan açabileceği bir link istiyorsan:
+
+1. **Backend → Railway.app**
+   - Railway'de "New Project" → "Deploy from GitHub repo" → bu repoyu seç
+   - Root Directory: `backend`
+   - Environment Variables: `GEMINI_API_KEY`, `GOOGLE_PLACES_API_KEY` ekle
+   - Railway otomatik `backend/Procfile` dosyasını kullanır, deploy sonunda bir `https://...railway.app` adresi verir
+
+2. **Frontend → Vercel.com**
+   - Vercel'de "New Project" → bu repoyu seç
+   - Root Directory: `frontend/client`
+   - Framework: Vite (otomatik algılanır)
+   - Environment Variable: `VITE_API_URL` = Railway'den aldığın backend adresi
+   - Deploy sonunda `https://...vercel.app` linki verir — bu, paylaşacağın link
+
+**Not:** Backend'deki SQLite veritabanı Railway'de kalıcı değildir; her yeni deploy'da taranan veriler sıfırlanır. Bu demo/MVP aşaması için sorun değil.
 
 ## Proje Yapısı
 
