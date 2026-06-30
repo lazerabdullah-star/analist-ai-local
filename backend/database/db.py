@@ -2,7 +2,11 @@ import sqlite3
 import json
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "../../database/businesses.db")
+if os.environ.get("RAILWAY_ENVIRONMENT"):
+    DB_PATH = "/tmp/businesses.db"
+else:
+    DB_PATH = os.path.join(os.path.dirname(__file__), "../../database/businesses.db")
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 def get_connection():
     conn = sqlite3.connect(DB_PATH)
