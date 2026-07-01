@@ -290,7 +290,10 @@ export default function App() {
       try {
         const res = await fetch(`${API_URL}/scan`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: sessionStorage.getItem('authHeader') || ''
+          },
           body: JSON.stringify({ city: sehir, category: aramaMetni, max_results: 20 })
         })
         const data = await res.json()

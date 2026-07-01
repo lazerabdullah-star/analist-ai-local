@@ -1,6 +1,8 @@
+import secrets
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 import google.generativeai as genai
 import os
@@ -14,15 +16,30 @@ load_dotenv()
 
 gemini_key = os.getenv("GEMINI_API_KEY")
 places_key = os.getenv("GOOGLE_PLACES_API_KEY")
+APP_USERNAME = os.getenv("APP_USERNAME", "atoprak")
+APP_PASSWORD = os.getenv("APP_PASSWORD", "atoprak2121")
 
 genai.configure(api_key=gemini_key)
+
+security = HTTPBasic()
+
+def verify_user(credentials: HTTPBasicCredentials = Depends(security)):
+    dogru_kullanici = secrets.compare_digest(credentials.username, APP_USERNAME)
+    dogru_sifre = secrets.compare_digest(credentials.password, APP_PASSWORD)
+    if not (dogru_kullanici and dogru_sifre):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Kullanıcı adı veya şifre hatalı",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     init_db()
     yield
 
-app = FastAPI(title="Analist AI Local", lifespan=lifespan)
+app = FastAPI(title="Analist AI Local", lifespan=lifespan, dependencies=[Depends(verify_user)])
 
 app.add_middleware(
     CORSMiddleware,
