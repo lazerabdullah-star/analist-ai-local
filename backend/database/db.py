@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import os
+import secrets
 
 if os.environ.get("RAILWAY_ENVIRONMENT"):
     DB_PATH = "/tmp/businesses.db"
@@ -35,6 +36,26 @@ def init_db():
             city TEXT,
             category TEXT,
             scanned_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS customers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            salt TEXT NOT NULL,
+            business_name TEXT,
+            phone TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS customer_sessions (
+            token TEXT PRIMARY KEY,
+            customer_id INTEGER NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
@@ -129,3 +150,44 @@ def get_stats():
         "mid_priority_leads": mid,
         "average_score": round(avg, 1) if avg else 0
     }
+
+# --- Müşteri Hesapları ---
+
+def create_customer(email: str, password_hash: str, salt: str, business_name: str, phone: str = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO customers (email, password_hash, salt, business_name, phone)
+        VALUES (?, ?, ?, ?, ?)
+    """, (email, password_hash, salt, business_name, phone))
+    conn.commit()
+    conn.close()
+
+def get_customer_by_email(email: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM customers WHERE email = ?", (email,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+def create_session(customer_id: int) -> str:
+    token = secrets.token_urlsafe(32)
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO customer_sessions (token, customer_id) VALUES (?, ?)", (token, customer_id))
+    conn.commit()
+    conn.close()
+    return token
+
+def get_customer_by_token(token: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT customers.* FROM customer_sessions
+        JOIN customers ON customers.id = customer_sessions.customer_id
+        WHERE customer_sessions.token = ?
+    """, (token,))
+    row = cursor.fetchone()
+    conn.close()
+    return dict(row) if row else None

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import Dashboard from './Dashboard'
+import MusteriEkle from './MusteriEkle'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -220,7 +220,7 @@ function IsletmeKarti({ isletme, index }) {
 }
 
 export default function App() {
-  const [sayfa, setSayfa] = useState('tarayici')
+  const [musteriEkleAcik, setMusteriEkleAcik] = useState(false)
   const [sehir, setSehir]           = useState('İstanbul')
   const [ilce, setIlce]             = useState('')
   const [kategoriYazisi, setKategoriYazisi] = useState('')
@@ -240,19 +240,6 @@ export default function App() {
         : b.completeness_score - a.completeness_score
     )
   }, [tumIsletmeler, siralama, aktifFiltreler])
-
-  if (sayfa === 'dashboard') return (
-    <div>
-      <div style={{ background: '#0F172A', padding: '8px 20px', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button onClick={() => setSayfa('tarayici')} style={{
-          fontSize: 12, color: '#94A3B8', background: 'none', border: '1px solid #334155',
-          borderRadius: 6, padding: '4px 10px', cursor: 'pointer'
-        }}>← Tarayıcıya Dön</button>
-        <span style={{ fontSize: 12, color: '#475569' }}>Demo Müşteri Ekranı</span>
-      </div>
-      <Dashboard />
-    </div>
-  )
 
   const kategoriToggle = (k) => {
     setSecilenler(prev => {
@@ -316,6 +303,11 @@ export default function App() {
   const yuksek = liste.filter(b => b.priority === 'YÜKSEK').length
   const orta   = liste.filter(b => b.priority === 'ORTA').length
 
+  const cikisYap = () => {
+    sessionStorage.removeItem('authHeader')
+    window.location.reload()
+  }
+
   return (
     <div style={{ minHeight: '100vh', background: '#F1F5F9', fontFamily: "'Inter', system-ui, sans-serif" }}>
 
@@ -345,13 +337,20 @@ export default function App() {
               {tumIsletmeler.length} işletme veritabanında
             </span>
           )}
-          <button onClick={() => setSayfa('dashboard')} style={{
+          <button onClick={() => setMusteriEkleAcik(true)} style={{
             fontSize: 12, fontWeight: 700, color: '#1E40AF',
             background: '#fff', border: 'none', borderRadius: 8,
             padding: '6px 14px', cursor: 'pointer'
-          }}>👤 Müşteri Ekranı</button>
+          }}>+ Müşteri Ekle</button>
+          <button onClick={cikisYap} style={{
+            fontSize: 12, color: '#93C5FD', background: 'none',
+            border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6,
+            padding: '5px 10px', cursor: 'pointer'
+          }}>Çıkış</button>
         </div>
       </div>
+
+      {musteriEkleAcik && <MusteriEkle onKapat={() => setMusteriEkleAcik(false)} />}
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 16px' }}>
 

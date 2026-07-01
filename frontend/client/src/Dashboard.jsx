@@ -375,9 +375,14 @@ function Rakip({ mobil }) {
 }
 
 // ─── Ana Dashboard ────────────────────────────────────────────────────────────
-export default function Dashboard() {
+export default function Dashboard({ musteri, onCikis }) {
   const [tab, setTab] = useState('ana')
   const { mobil, tablet } = useEkran()
+
+  if (musteri) {
+    DEMO.isletme.ad = musteri.business_name || DEMO.isletme.ad
+    DEMO.isletme.telefon = musteri.phone || DEMO.isletme.telefon
+  }
 
   const tablar = [
     { id: 'ana',    ikon: '🏠', baslik: 'Ana Sayfa' },
@@ -411,6 +416,13 @@ export default function Dashboard() {
           }}>
             Skor: {DEMO.isletme.puan}/100
           </div>
+          {onCikis && (
+            <button onClick={onCikis} style={{
+              fontSize: 12, color: '#93C5FD', background: 'none',
+              border: '1px solid rgba(255,255,255,0.3)', borderRadius: 6,
+              padding: '5px 10px', cursor: 'pointer'
+            }}>Çıkış</button>
+          )}
           {!mobil && (
             <div style={{ display: 'flex', gap: 4 }}>
               {tablar.map(t => (

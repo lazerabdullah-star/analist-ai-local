@@ -1,6 +1,6 @@
 import secrets
 from contextlib import asynccontextmanager
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
@@ -10,7 +10,11 @@ from dotenv import load_dotenv
 
 from modules.scanner.google_places import search_businesses
 from modules.scanner.completeness import check_completeness
-from database.db import init_db, save_business, get_all_businesses, get_stats
+from modules.auth.security import hash_password, verify_password
+from database.db import (
+    init_db, save_business, get_all_businesses, get_stats,
+    create_customer, get_customer_by_email, create_session, get_customer_by_token
+)
 
 load_dotenv()
 
@@ -39,7 +43,16 @@ async def lifespan(_app: FastAPI):
     init_db()
     yield
 
-app = FastAPI(title="Analist AI Local", lifespan=lifespan, dependencies=[Depends(verify_user)])
+def verify_customer(authorization: str = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Giriş gerekli")
+    token = authorization.split(" ", 1)[1]
+    customer = get_customer_by_token(token)
+    if not customer:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Oturum geçersiz, tekrar giriş yapın")
+    return customer
+
+app = FastAPI(title="Analist AI Local", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -54,7 +67,7 @@ app.add_middleware(
 class CommentRequest(BaseModel):
     comment: str
 
-@app.post("/analyze-comment")
+@app.post("/analyze-comment", dependencies=[Depends(verify_user)])
 async def analyze(data: CommentRequest):
     try:
         model = genai.GenerativeModel('models/gemini-1.5-flash')
@@ -71,7 +84,7 @@ class ScanRequest(BaseModel):
     category: str
     max_results: int = 20
 
-@app.post("/scan")
+@app.post("/scan", dependencies=[Depends(verify_user)])
 async def scan_businesses(data: ScanRequest):
     """Google'ı tara, işletmeleri bul, eksiklerini puanla ve kaydet"""
 
@@ -116,7 +129,7 @@ async def scan_businesses(data: ScanRequest):
         "businesses": saved
     }
 
-@app.get("/businesses")
+@app.get("/businesses", dependencies=[Depends(verify_user)])
 async def list_businesses(city: str = None, category: str = None, max_score: int = None):
     """Taranan tüm işletmeleri listele"""
     businesses = get_all_businesses(city=city, category=category, max_score=max_score)
@@ -125,7 +138,7 @@ async def list_businesses(city: str = None, category: str = None, max_score: int
         "businesses": businesses
     }
 
-@app.get("/businesses/leads")
+@app.get("/businesses/leads", dependencies=[Depends(verify_user)])
 async def get_leads():
     """Satış için en iyi adayları getir (puanı 60'ın altındakiler)"""
     businesses = get_all_businesses(max_score=60)
@@ -135,7 +148,55 @@ async def get_leads():
         "businesses": businesses
     }
 
-@app.get("/stats")
+@app.get("/stats", dependencies=[Depends(verify_user)])
 async def stats():
     """Genel istatistikler"""
     return get_stats()
+
+# --- Müşteri Hesapları (Admin oluşturur) ---
+
+class MusteriEkleRequest(BaseModel):
+    email: str
+    password: str
+    business_name: str
+    phone: str = None
+
+@app.post("/admin/musteriler", dependencies=[Depends(verify_user)])
+async def musteri_ekle(data: MusteriEkleRequest):
+    """Admin, yeni bir müşteri hesabı (email + şifre) oluşturur"""
+    if get_customer_by_email(data.email):
+        raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı")
+
+    salt, pw_hash = hash_password(data.password)
+    create_customer(data.email, pw_hash, salt, data.business_name, data.phone)
+    return {"success": True, "message": f"{data.business_name} için müşteri hesabı oluşturuldu"}
+
+# --- Müşteri Girişi ve Paneli ---
+
+class MusteriGirisRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/musteri/giris")
+async def musteri_giris(data: MusteriGirisRequest):
+    """Müşteri kendi email/şifresiyle giriş yapar"""
+    customer = get_customer_by_email(data.email)
+    if not customer or not verify_password(data.password, customer["salt"], customer["password_hash"]):
+        raise HTTPException(status_code=401, detail="Email veya şifre hatalı")
+
+    token = create_session(customer["id"])
+    return {
+        "token": token,
+        "business_name": customer["business_name"],
+        "phone": customer["phone"],
+        "email": customer["email"]
+    }
+
+@app.get("/musteri/panel")
+async def musteri_panel(customer: dict = Depends(verify_customer)):
+    """Giriş yapmış müşterinin kendi bilgilerini getirir"""
+    return {
+        "business_name": customer["business_name"],
+        "phone": customer["phone"],
+        "email": customer["email"]
+    }
