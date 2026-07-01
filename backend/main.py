@@ -1,3 +1,8 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import secrets
 import uuid
 from contextlib import asynccontextmanager
@@ -8,8 +13,6 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import google.generativeai as genai
-import os
-from dotenv import load_dotenv
 
 from modules.scanner.google_places import search_businesses
 from modules.scanner.completeness import check_completeness
@@ -22,8 +25,6 @@ from database.db import (
     save_google_tokens, clear_google_tokens,
     get_all_customers, delete_customer, reset_customer_password
 )
-
-load_dotenv()
 
 gemini_key = os.getenv("GEMINI_API_KEY")
 places_key = os.getenv("GOOGLE_PLACES_API_KEY")
