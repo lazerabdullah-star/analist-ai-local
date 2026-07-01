@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 export default function MusteriEkle({ onKapat }) {
   const [isletmeAdi, setIsletmeAdi] = useState('')
   const [kategori, setKategori] = useState('')
+  const [sehir, setSehir] = useState('')
   const [telefon, setTelefon] = useState('')
   const [email, setEmail] = useState('')
   const [sifre, setSifre] = useState('')
@@ -26,14 +27,14 @@ export default function MusteriEkle({ onKapat }) {
           Authorization: sessionStorage.getItem('authHeader') || ''
         },
         body: JSON.stringify({
-          email, password: sifre, business_name: isletmeAdi, phone: telefon, category: kategori
+          email, password: sifre, business_name: isletmeAdi, phone: telefon, category: kategori, city: sehir
         })
       })
       const data = await res.json()
 
       if (res.ok) {
         setMesaj(data.message || 'Müşteri hesabı oluşturuldu.')
-        setIsletmeAdi(''); setKategori(''); setTelefon(''); setEmail(''); setSifre('')
+        setIsletmeAdi(''); setKategori(''); setSehir(''); setTelefon(''); setEmail(''); setSifre('')
       } else {
         setHata(data.detail || 'Hesap oluşturulamadı.')
       }
@@ -66,6 +67,8 @@ export default function MusteriEkle({ onKapat }) {
         <input placeholder="İşletme adı" value={isletmeAdi} onChange={e => setIsletmeAdi(e.target.value)}
           required style={inputStyle} />
         <input placeholder="Kategori (örn: Çiçekçi)" value={kategori} onChange={e => setKategori(e.target.value)}
+          style={inputStyle} />
+        <input placeholder="Şehir (örn: İstanbul)" value={sehir} onChange={e => setSehir(e.target.value)}
           style={inputStyle} />
         <input placeholder="Telefon" value={telefon} onChange={e => setTelefon(e.target.value)}
           style={inputStyle} />

@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import google.generativeai as genai
 
-from modules.scanner.google_places import search_businesses
+from modules.scanner.google_places import search_businesses, find_business_by_name, find_top_competitor
 from modules.scanner.completeness import check_completeness
 from modules.auth.security import hash_password, verify_password
 from modules.auth import google_oauth
@@ -174,6 +174,7 @@ class MusteriEkleRequest(BaseModel):
     business_name: str
     phone: str = None
     category: str = None
+    city: str = None
 
 @app.post("/admin/musteriler", dependencies=[Depends(verify_user)])
 async def musteri_ekle(data: MusteriEkleRequest):
@@ -182,7 +183,7 @@ async def musteri_ekle(data: MusteriEkleRequest):
         raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı")
 
     salt, pw_hash = hash_password(data.password)
-    create_customer(data.email, pw_hash, salt, data.business_name, data.phone, data.category)
+    create_customer(data.email, pw_hash, salt, data.business_name, data.phone, data.category, data.city)
     return {"success": True, "message": f"{data.business_name} için müşteri hesabı oluşturuldu"}
 
 @app.get("/admin/musteriler", dependencies=[Depends(verify_user)])
@@ -225,7 +226,8 @@ async def musteri_giris(data: MusteriGirisRequest):
         "business_name": customer["business_name"],
         "phone": customer["phone"],
         "email": customer["email"],
-        "category": customer["category"]
+        "category": customer["category"],
+        "city": customer["city"]
     }
 
 @app.get("/musteri/panel")
@@ -235,8 +237,46 @@ async def musteri_panel(customer: dict = Depends(verify_customer)):
         "business_name": customer["business_name"],
         "phone": customer["phone"],
         "email": customer["email"],
-        "category": customer["category"]
+        "category": customer["category"],
+        "city": customer["city"]
     }
+
+@app.get("/musteri/gercek-veri")
+async def musteri_gercek_veri(customer: dict = Depends(verify_customer)):
+    """Müşterinin Google Places üzerindeki gerçek işletme ve rakip verisini getirir"""
+    isletme = {"found": False}
+    rakip = {"found": False}
+
+    if customer["business_name"]:
+        place = find_business_by_name(customer["business_name"], customer["city"], places_key)
+        if place:
+            completeness = check_completeness(place)
+            isletme = {
+                "found": True,
+                "ad": place.get("displayName", {}).get("text", customer["business_name"]),
+                "adres": place.get("formattedAddress"),
+                "telefon": place.get("nationalPhoneNumber"),
+                "website": place.get("websiteUri"),
+                "rating": place.get("rating"),
+                "review_count": place.get("userRatingCount", 0),
+                "photo_count": completeness["photo_count"],
+                "has_hours": completeness["has_hours"],
+                "score": completeness["score"],
+                "missing": completeness["missing"]
+            }
+
+            if customer["category"] and customer["city"]:
+                rakip_place = find_top_competitor(customer["category"], customer["city"], customer["business_name"], places_key)
+                if rakip_place:
+                    rakip = {
+                        "found": True,
+                        "ad": rakip_place.get("displayName", {}).get("text", "Rakip işletme"),
+                        "rating": rakip_place.get("rating"),
+                        "review_count": rakip_place.get("userRatingCount", 0),
+                        "photo_count": len(rakip_place.get("photos", []))
+                    }
+
+    return {"isletme": isletme, "rakip": rakip}
 
 # --- Müşteri Talepleri (fotoğraf / web sitesi / hizmet ekleme) ---
 

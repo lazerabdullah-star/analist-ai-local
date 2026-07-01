@@ -2,47 +2,15 @@ import { useState, useEffect } from 'react'
 import GorevIstekModal from './GorevIstekModal'
 import GoogleBaglanti from './GoogleBaglanti'
 
-// ─── Demo veri ────────────────────────────────────────────────────────────────
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+
+// ─── Varsayılan işletme bilgisi (müşteri hesabından gelen veriyle değiştirilir) ─
 const DEMO = {
   isletme: {
-    ad: 'Güler Diş Kliniği',
-    kategori: 'Diş Hekimi',
-    sehir: 'İstanbul', ilce: 'Kadıköy',
-    telefon: '0216 418 72 33',
-    adres: 'Moda Cd. No:12, 34710 Kadıköy/İstanbul',
-    puan: 68,
-    yildiz: 4.3,
-    yorumSayisi: 47,
-    fotografSayisi: 3,
-    webSitesi: false,
-    sonFotografGun: 42,
-  },
-  istatistik: {
-    goruntulenme: { deger: 342, degisim: +18 },
-    telefon:      { deger: 11,  degisim: +3  },
-    yon:          { deger: 24,  degisim: -2  },
-    tiklanma:     { deger: 58,  degisim: +9  },
-  },
-  rakip: {
-    ad: 'Smile Dental Kadıköy',
-    yildiz: 4.7, yorum: 112, fotograf: 18,
-    benimPuanim: 4.3, benimYorum: 47, benimFotograf: 3,
-  },
-  yorumlar: [
-    { id: 1, ad: 'Mehmet Y.', yildiz: 5, metin: 'Çok memnun kaldım, doktor son derece ilgili ve profesyoneldi. Kesinlikle tavsiye ederim.', tarih: '2 gün önce', cevapVar: false },
-    { id: 2, ad: 'Ayşe K.',   yildiz: 4, metin: 'Hizmet genel olarak iyiydi ancak bekleme süresi biraz uzundu.', tarih: '5 gün önce',  cevapVar: false },
-    { id: 3, ad: 'Can D.',    yildiz: 3, metin: 'Fiyatlar biraz yüksek ama işini iyi yapıyor.', tarih: '1 hafta önce', cevapVar: true  },
-    { id: 4, ad: 'Fatma Ş.',  yildiz: 5, metin: 'Harika bir klinik! Çok temiz ve modern. Herkese öneririm.', tarih: '2 hafta önce', cevapVar: true  },
-  ],
-  gorevler: [
-    { id: 1, baslik: '3 yoruma cevap verilmedi',          aciklama: 'Cevapsız yorumlar müşteri güvenini düşürür.',  oncelik: 'yüksek', ikon: '💬', tur: 'yorum' },
-    { id: 2, baslik: '42 gündür fotoğraf yüklenmedi',     aciklama: 'Rakibiniz bu hafta 5 yeni fotoğraf ekledi.',   oncelik: 'yüksek', ikon: '📷', tur: 'foto' },
-    { id: 3, baslik: 'Web sitesi bağlantısı eksik',        aciklama: 'Web sitesi olan işletmeler %35 daha fazla tıklanıyor.', oncelik: 'orta', ikon: '🌐', tur: 'website' },
-    { id: 4, baslik: 'Hizmet listesi güncellenmeli',       aciklama: 'Sunduğunuz tüm hizmetleri ekleyin.',           oncelik: 'düşük', ikon: '📋', tur: 'hizmet' },
-  ],
-  aiCevaplar: {
-    1: 'Değerli Mehmet Bey, güzel yorumunuz için teşekkür ederiz. Sizi kliniğimizde ağırlamaktan mutluluk duyduk. Tekrar görüşmek dileğiyle! 😊',
-    2: 'Sayın Ayşe Hanım, değerli geri bildiriminiz için teşekkür ederiz. Bekleme sürelerini kısaltmak için randevu sistemimizi güncelliyoruz. Anlayışınız için teşekkürler.',
+    ad: 'İşletmeniz',
+    kategori: '',
+    sehir: '',
+    telefon: '',
   }
 }
 
@@ -66,30 +34,6 @@ function Yildiz({ deger, boyut = 14 }) {
         <span key={i} style={{ color: i <= Math.round(deger) ? '#F59E0B' : '#E2E8F0' }}>★</span>
       ))}
     </span>
-  )
-}
-
-// ─── İstatistik Kartı ─────────────────────────────────────────────────────────
-function StatKart({ ikon, baslik, deger, degisim }) {
-  const pozitif = degisim >= 0
-  return (
-    <div style={{
-      background: '#fff', borderRadius: 14, padding: '18px 20px',
-      border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)'
-    }}>
-      <div style={{ fontSize: 22, marginBottom: 8 }}>{ikon}</div>
-      <div style={{ fontSize: 26, fontWeight: 800, color: '#0F172A', lineHeight: 1 }}>{deger}</div>
-      <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>{baslik}</div>
-      <div style={{
-        display: 'inline-flex', alignItems: 'center', gap: 3, marginTop: 8,
-        fontSize: 12, fontWeight: 600,
-        color: pozitif ? '#16A34A' : '#DC2626',
-        background: pozitif ? '#F0FDF4' : '#FEF2F2',
-        padding: '2px 8px', borderRadius: 99
-      }}>
-        {pozitif ? '↑' : '↓'} {Math.abs(degisim)} bu hafta
-      </div>
-    </div>
   )
 }
 
@@ -127,84 +71,6 @@ function SaglikPuani({ puan }) {
   )
 }
 
-// ─── Yorum Kartı ──────────────────────────────────────────────────────────────
-function YorumKarti({ yorum }) {
-  const [cevapAcik, setCevapAcik] = useState(false)
-  const [cevap, setCevap] = useState(DEMO.aiCevaplar[yorum.id] || '')
-  const [gonderildi, setGonderildi] = useState(yorum.cevapVar)
-
-  return (
-    <div style={{
-      background: '#fff', borderRadius: 14, padding: '16px 20px', marginBottom: 10,
-      border: `1px solid ${!yorum.cevapVar && !gonderildi ? '#FECACA' : '#E2E8F0'}`,
-      boxShadow: '0 1px 4px rgba(15,23,42,0.05)'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4, flexWrap: 'wrap' }}>
-            <div style={{
-              width: 32, height: 32, borderRadius: '50%', background: '#EEF2FF',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 14, fontWeight: 700, color: '#3B5BDB', flexShrink: 0
-            }}>{yorum.ad[0]}</div>
-            <span style={{ fontWeight: 700, fontSize: 14, color: '#0F172A' }}>{yorum.ad}</span>
-            <Yildiz deger={yorum.yildiz} />
-            <span style={{ fontSize: 12, color: '#94A3B8' }}>{yorum.tarih}</span>
-          </div>
-          <p style={{ fontSize: 14, color: '#374151', lineHeight: 1.6, margin: 0 }}>{yorum.metin}</p>
-        </div>
-        {!gonderildi && (
-          <span style={{
-            fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 99, flexShrink: 0,
-            background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA'
-          }}>Cevap yok</span>
-        )}
-        {gonderildi && (
-          <span style={{
-            fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 99, flexShrink: 0,
-            background: '#F0FDF4', color: '#16A34A', border: '1px solid #BBF7D0'
-          }}>✓ Cevaplandı</span>
-        )}
-      </div>
-
-      {!gonderildi && (
-        <div style={{ marginTop: 12 }}>
-          {!cevapAcik ? (
-            <button onClick={() => setCevapAcik(true)} style={{
-              fontSize: 13, fontWeight: 600, color: '#3B5BDB', background: '#EEF2FF',
-              border: 'none', borderRadius: 8, padding: '7px 14px', cursor: 'pointer'
-            }}>✨ AI Cevap Öner</button>
-          ) : (
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#64748B', marginBottom: 6 }}>
-                AI tarafından oluşturulan cevap — düzenleyebilirsiniz:
-              </div>
-              <textarea
-                value={cevap} onChange={e => setCevap(e.target.value)} rows={3}
-                style={{
-                  width: '100%', padding: '10px 14px', borderRadius: 10, fontSize: 13,
-                  border: '1.5px solid #C7D2FE', outline: 'none', resize: 'vertical',
-                  boxSizing: 'border-box', lineHeight: 1.5, color: '#374151', fontFamily: 'inherit'
-                }}
-              />
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <button onClick={() => setGonderildi(true)} style={{
-                  fontSize: 13, fontWeight: 700, color: '#fff', background: '#3B5BDB',
-                  border: 'none', borderRadius: 8, padding: '8px 18px', cursor: 'pointer'
-                }}>Gönder</button>
-                <button onClick={() => setCevapAcik(false)} style={{
-                  fontSize: 13, color: '#64748B', background: '#F8FAFC',
-                  border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 14px', cursor: 'pointer'
-                }}>Vazgeç</button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
 // ─── Görev Ekle Butonu ────────────────────────────────────────────────────────
 function GorevEkleButonu({ onClick }) {
   return (
@@ -217,9 +83,28 @@ function GorevEkleButonu({ onClick }) {
   )
 }
 
+// ─── Görev listesi (gerçek eksik verilerden) ──────────────────────────────────
+const GOREV_IKON = { 'Telefon numarası eksik': '📞', 'Adres eksik': '📍', 'Çalışma saatleri girilmemiş': '🕒', 'Web sitesi yok': '🌐' }
+function eksiklerdenGorevUret(missing) {
+  return missing.map((metin, i) => {
+    const foto = metin.includes('fotoğraf') || metin.includes('Fotoğraf')
+    const yorum = metin.includes('yorum') || metin.includes('Yorum')
+    const website = metin.includes('Web sitesi')
+    return {
+      id: i,
+      baslik: metin,
+      ikon: GOREV_IKON[metin] || (foto ? '📷' : yorum ? '💬' : website ? '🌐' : '📋'),
+      oncelik: i === 0 ? 'yüksek' : i === 1 ? 'orta' : 'düşük',
+      tur: foto ? 'foto' : yorum ? 'yorum' : website ? 'website' : 'hizmet'
+    }
+  })
+}
+
 // ─── Ana Sayfa Tab ─────────────────────────────────────────────────────────────
-function AnaSayfa({ mobil, setTab, onGorevEkle }) {
-  const ist = DEMO.istatistik
+function AnaSayfa({ mobil, setTab, onGorevEkle, gercek, gercekYukleniyor }) {
+  const isletme = gercek?.isletme?.found ? gercek.isletme : null
+  const gorevler = isletme ? eksiklerdenGorevUret(isletme.missing) : []
+
   return (
     <div>
       <GoogleBaglanti />
@@ -233,26 +118,32 @@ function AnaSayfa({ mobil, setTab, onGorevEkle }) {
         <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, lineHeight: 1.4 }}>
           Günaydın! İşletmenizi analiz ettim.
         </div>
-        <div style={{ fontSize: 13, color: '#BFDBFE', lineHeight: 1.7 }}>
-          📈 Profil görüntülenmeniz geçen haftaya göre <strong style={{ color: '#fff' }}>%18 arttı.</strong><br />
-          💬 <strong style={{ color: '#fff' }}>3 yorumunuz</strong> henüz cevaplanmadı — müşteri güveni için önemli.<br />
-          📷 Son fotoğrafınızı <strong style={{ color: '#fff' }}>42 gün önce</strong> yüklediniz. Rakibiniz bu hafta 5 ekledi.<br />
-          🌐 Web sitesi bağlantısı eklenmesi %35 daha fazla tıklanma sağlar.
-        </div>
-        <div style={{
-          marginTop: 14, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,0.15)',
-          fontSize: 13, color: '#93C5FD'
-        }}>
-          Bugün önerin: <strong style={{ color: '#fff' }}>Önce yorumları cevapla, sonra yeni fotoğraf yükle.</strong>
-        </div>
+        {gercekYukleniyor ? (
+          <div style={{ fontSize: 13, color: '#BFDBFE' }}>Google Haritalar'daki verileriniz kontrol ediliyor...</div>
+        ) : isletme ? (
+          <div style={{ fontSize: 13, color: '#BFDBFE', lineHeight: 1.7 }}>
+            ⭐ Google puanınız <strong style={{ color: '#fff' }}>{isletme.rating ?? '—'}</strong>, toplam <strong style={{ color: '#fff' }}>{isletme.review_count}</strong> yorumunuz var.<br />
+            📊 Profiliniz <strong style={{ color: '#fff' }}>%{isletme.score}</strong> tamamlanmış.<br />
+            {isletme.missing.length > 0 ? (
+              <>🔧 En önemli eksik: <strong style={{ color: '#fff' }}>{isletme.missing[0]}</strong></>
+            ) : (
+              <>✅ Profilinizde eksik bulunamadı, harika durumdasınız.</>
+            )}
+          </div>
+        ) : (
+          <div style={{ fontSize: 13, color: '#BFDBFE' }}>
+            İşletmeniz Google Haritalar'da henüz eşleştirilemedi. İşletme adı/şehir bilgilerini kontrol etmemiz gerekebilir.
+          </div>
+        )}
       </div>
 
       {/* İstatistikler */}
-      <div style={{ display: 'grid', gridTemplateColumns: mobil ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
-        <StatKart ikon="👁️" baslik="Profil Görüntüleme" deger={ist.goruntulenme.deger} degisim={ist.goruntulenme.degisim} />
-        <StatKart ikon="📞" baslik="Telefon Araması"    deger={ist.telefon.deger}      degisim={ist.telefon.degisim}      />
-        <StatKart ikon="🗺️" baslik="Yön Tarifi İsteği"  deger={ist.yon.deger}          degisim={ist.yon.degisim}          />
-        <StatKart ikon="🖱️" baslik="Web Tıklaması"      deger={ist.tiklanma.deger}     degisim={ist.tiklanma.degisim}     />
+      <div style={{
+        background: '#fff', borderRadius: 14, padding: '16px 20px', marginBottom: 20,
+        border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)',
+        fontSize: 13, color: '#64748B'
+      }}>
+        📈 Profil görüntülenme, telefon araması ve yön tarifi gibi etkileşim istatistikleri, Google ile bağlantınız tamamlandıktan sonra burada gösterilecek.
       </div>
 
       {/* Sağlık Puanı + Görevler */}
@@ -261,14 +152,21 @@ function AnaSayfa({ mobil, setTab, onGorevEkle }) {
           background: '#fff', borderRadius: 16, padding: '22px 24px',
           border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)'
         }}>
-          <SaglikPuani puan={DEMO.isletme.puan} />
+          {isletme ? <SaglikPuani puan={isletme.score} /> : (
+            <div style={{ fontSize: 13, color: '#64748B' }}>Analist Skoru için işletme verisi bekleniyor.</div>
+          )}
         </div>
         <div style={{
           background: '#fff', borderRadius: 16, padding: '22px 24px',
           border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)'
         }}>
           <div style={{ fontWeight: 700, fontSize: 15, color: '#0F172A', marginBottom: 14 }}>Bugünkü Görevler</div>
-          {DEMO.gorevler.map(g => {
+          {gorevler.length === 0 && (
+            <div style={{ fontSize: 13, color: '#64748B' }}>
+              {isletme ? 'Şu an önerilecek bir görev yok.' : 'İşletme verisi bulunamadığı için görev üretilemedi.'}
+            </div>
+          )}
+          {gorevler.map(g => {
             const renkler = { yüksek: ['#FEF2F2','#DC2626'], orta: ['#FFFBEB','#D97706'], düşük: ['#F0FDF4','#16A34A'] }
             const [bg, tc] = renkler[g.oncelik]
             return (
@@ -280,7 +178,6 @@ function AnaSayfa({ mobil, setTab, onGorevEkle }) {
                 }}>{g.ikon}</span>
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#0F172A' }}>{g.baslik}</div>
-                  <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{g.aciklama}</div>
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
                   background: bg, color: tc, whiteSpace: 'nowrap', flexShrink: 0, marginLeft: 'auto' }}>
@@ -292,62 +189,63 @@ function AnaSayfa({ mobil, setTab, onGorevEkle }) {
           })}
         </div>
       </div>
-
-      {/* Son 2 yorum özet */}
-      <div style={{ background: '#fff', borderRadius: 16, padding: '22px 24px', border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: '#0F172A' }}>Son Yorumlar</div>
-          <span style={{ fontSize: 12, background: '#FEF2F2', color: '#DC2626', padding: '2px 9px', borderRadius: 99, fontWeight: 700 }}>
-            3 cevapsız
-          </span>
-        </div>
-        {DEMO.yorumlar.slice(0, 2).map(y => <YorumKarti key={y.id} yorum={y} />)}
-      </div>
     </div>
   )
 }
 
 // ─── Yorumlar Tab ─────────────────────────────────────────────────────────────
-function Yorumlar() {
+function Yorumlar({ gercek, gercekYukleniyor }) {
+  const isletme = gercek?.isletme?.found ? gercek.isletme : null
+
+  if (gercekYukleniyor) {
+    return <div style={{ fontSize: 13, color: '#64748B' }}>Yükleniyor...</div>
+  }
+
   return (
     <div>
       <div style={{ background: '#fff', borderRadius: 16, padding: '20px 24px', border: '1px solid #E2E8F0', marginBottom: 16, boxShadow: '0 1px 4px rgba(15,23,42,0.05)' }}>
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
+        {isletme ? (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 42, fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{DEMO.isletme.yildiz}</div>
-            <Yildiz deger={DEMO.isletme.yildiz} boyut={18} />
-            <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>{DEMO.isletme.yorumSayisi} yorum</div>
+            <div style={{ fontSize: 42, fontWeight: 900, color: '#0F172A', lineHeight: 1 }}>{isletme.rating ?? '—'}</div>
+            {isletme.rating != null && <Yildiz deger={isletme.rating} boyut={18} />}
+            <div style={{ fontSize: 12, color: '#64748B', marginTop: 4 }}>{isletme.review_count} yorum</div>
           </div>
-          <div style={{ flex: 1, minWidth: 160 }}>
-            {[5,4,3,2,1].map(s => {
-              const adet = DEMO.yorumlar.filter(y => y.yildiz === s).length
-              const yuzde = Math.round((adet / DEMO.yorumlar.length) * 100)
-              return (
-                <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                  <span style={{ fontSize: 12, color: '#64748B', width: 12 }}>{s}</span>
-                  <span style={{ fontSize: 12, color: '#F59E0B' }}>★</span>
-                  <div style={{ flex: 1, height: 6, background: '#F1F5F9', borderRadius: 99 }}>
-                    <div style={{ height: 6, width: `${yuzde}%`, background: '#F59E0B', borderRadius: 99 }} />
-                  </div>
-                  <span style={{ fontSize: 12, color: '#94A3B8', width: 20 }}>{adet}</span>
-                </div>
-              )
-            })}
-          </div>
+        ) : (
+          <div style={{ fontSize: 13, color: '#64748B' }}>İşletmeniz Google Haritalar'da henüz eşleştirilemedi.</div>
+        )}
+      </div>
+      <div style={{ background: '#fff', borderRadius: 16, padding: '20px 24px', border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)' }}>
+        <div style={{ fontSize: 13, color: '#64748B' }}>
+          Yorumları tek tek görüntüleme ve AI ile yanıtlama özelliği, Google Yorum Yönetimi entegrasyonu tamamlanınca burada olacak.
         </div>
       </div>
-      {DEMO.yorumlar.map(y => <YorumKarti key={y.id} yorum={y} />)}
     </div>
   )
 }
 
 // ─── Rakip Tab ────────────────────────────────────────────────────────────────
-function Rakip({ mobil }) {
-  const r = DEMO.rakip
+function Rakip({ mobil, gercek, gercekYukleniyor, isletmeAdi }) {
+  if (gercekYukleniyor) {
+    return <div style={{ fontSize: 13, color: '#64748B' }}>Yükleniyor...</div>
+  }
+
+  const isletme = gercek?.isletme?.found ? gercek.isletme : null
+  const r = gercek?.rakip?.found ? gercek.rakip : null
+
+  if (!isletme || !r) {
+    return (
+      <div style={{ background: '#fff', borderRadius: 16, padding: '22px 24px', border: '1px solid #E2E8F0', boxShadow: '0 1px 4px rgba(15,23,42,0.05)' }}>
+        <div style={{ fontSize: 13, color: '#64748B' }}>
+          Rakip karşılaştırması için işletme ve şehir/kategori bilgilerinizin Google Haritalar'da eşleşmesi gerekiyor. Şu an yeterli veri bulunamadı.
+        </div>
+      </div>
+    )
+  }
+
   const satirlar = [
-    { baslik: 'Google Puanı', benim: r.benimPuanim + ' ★', rakip: r.yildiz + ' ★', benimIyi: r.benimPuanim >= r.yildiz },
-    { baslik: 'Yorum Sayısı', benim: r.benimYorum, rakip: r.yorum, benimIyi: r.benimYorum >= r.yorum },
-    { baslik: 'Fotoğraf Sayısı', benim: r.benimFotograf, rakip: r.fotograf, benimIyi: r.benimFotograf >= r.fotograf },
+    { baslik: 'Google Puanı', benim: (isletme.rating ?? '—') + ' ★', rakip: (r.rating ?? '—') + ' ★', benimIyi: (isletme.rating ?? 0) >= (r.rating ?? 0) },
+    { baslik: 'Yorum Sayısı', benim: isletme.review_count, rakip: r.review_count, benimIyi: isletme.review_count >= r.review_count },
+    { baslik: 'Fotoğraf Sayısı', benim: isletme.photo_count, rakip: r.photo_count, benimIyi: isletme.photo_count >= r.photo_count },
   ]
   return (
     <div>
@@ -356,7 +254,7 @@ function Rakip({ mobil }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 12, alignItems: 'center', marginBottom: 20 }}>
           <div style={{ textAlign: 'center', padding: 16, background: '#EEF2FF', borderRadius: 14 }}>
             <div style={{ fontSize: 12, color: '#64748B', marginBottom: 6 }}>SİZ</div>
-            <div style={{ fontWeight: 700, fontSize: 14, color: '#0F172A' }}>{DEMO.isletme.ad}</div>
+            <div style={{ fontWeight: 700, fontSize: 14, color: '#0F172A' }}>{isletmeAdi}</div>
           </div>
           <div style={{ fontSize: 20, color: '#94A3B8', textAlign: 'center' }}>VS</div>
           <div style={{ textAlign: 'center', padding: 16, background: '#F8FAFC', borderRadius: 14 }}>
@@ -380,13 +278,6 @@ function Rakip({ mobil }) {
           </div>
         ))}
       </div>
-      <div style={{ background: 'linear-gradient(135deg, #FFF7ED, #FFFBEB)', borderRadius: 14, padding: '16px 20px', border: '1px solid #FDE68A' }}>
-        <div style={{ fontWeight: 700, fontSize: 14, color: '#92400E', marginBottom: 8 }}>💡 AI Önerisi</div>
-        <div style={{ fontSize: 13, color: '#78350F', lineHeight: 1.6 }}>
-          Rakibinizin fotoğraf sayısı sizden <strong>6 kat fazla</strong>. Google, fotoğrafı fazla olan işletmeleri arama sonuçlarında öne çıkarıyor.
-          Bu hafta en az <strong>3 fotoğraf</strong> yüklemek sıralamanızı iyileştirebilir.
-        </div>
-      </div>
     </div>
   )
 }
@@ -395,13 +286,33 @@ function Rakip({ mobil }) {
 export default function Dashboard({ musteri, onCikis }) {
   const [tab, setTab] = useState('ana')
   const [gorevAcik, setGorevAcik] = useState(null)
+  const [gercek, setGercek] = useState(null)
+  const [gercekYukleniyor, setGercekYukleniyor] = useState(true)
   const { mobil, tablet } = useEkran()
+
+  useEffect(() => {
+    const getir = async () => {
+      try {
+        const token = sessionStorage.getItem('musteriToken')
+        const res = await fetch(`${API_URL}/musteri/gercek-veri`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        if (res.ok) setGercek(await res.json())
+      } finally {
+        setGercekYukleniyor(false)
+      }
+    }
+    getir()
+  }, [])
 
   if (musteri) {
     DEMO.isletme.ad = musteri.business_name || DEMO.isletme.ad
     DEMO.isletme.telefon = musteri.phone || DEMO.isletme.telefon
     DEMO.isletme.kategori = musteri.category || DEMO.isletme.kategori
+    DEMO.isletme.sehir = musteri.city || DEMO.isletme.sehir
   }
+
+  const skor = gercek?.isletme?.found ? gercek.isletme.score : null
 
   const tablar = [
     { id: 'ana',    ikon: '🏠', baslik: 'Ana Sayfa' },
@@ -425,7 +336,7 @@ export default function Dashboard({ musteri, onCikis }) {
             {DEMO.isletme.ad}
           </div>
           <div style={{ fontSize: 12, color: '#93C5FD' }}>
-            {DEMO.isletme.kategori} • {DEMO.isletme.ilce}, {DEMO.isletme.sehir}
+            {DEMO.isletme.kategori}{DEMO.isletme.sehir ? ` • ${DEMO.isletme.sehir}` : ''}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -433,7 +344,7 @@ export default function Dashboard({ musteri, onCikis }) {
             background: 'rgba(255,255,255,0.15)', borderRadius: 99, padding: '6px 14px',
             fontSize: 13, color: '#fff', fontWeight: 700
           }}>
-            Skor: {DEMO.isletme.puan}/100
+            Skor: {skor != null ? `${skor}/100` : '—'}
           </div>
           {onCikis && (
             <button onClick={onCikis} style={{
@@ -458,9 +369,9 @@ export default function Dashboard({ musteri, onCikis }) {
 
       {/* İçerik */}
       <div style={{ maxWidth: 900, margin: '0 auto', padding: mobil ? '16px 12px' : '24px 16px' }}>
-        {tab === 'ana'   && <AnaSayfa mobil={mobil} setTab={setTab} onGorevEkle={setGorevAcik} />}
-        {tab === 'yorum' && <Yorumlar />}
-        {tab === 'rakip' && <Rakip mobil={mobil} />}
+        {tab === 'ana'   && <AnaSayfa mobil={mobil} setTab={setTab} onGorevEkle={setGorevAcik} gercek={gercek} gercekYukleniyor={gercekYukleniyor} />}
+        {tab === 'yorum' && <Yorumlar gercek={gercek} gercekYukleniyor={gercekYukleniyor} />}
+        {tab === 'rakip' && <Rakip mobil={mobil} gercek={gercek} gercekYukleniyor={gercekYukleniyor} isletmeAdi={DEMO.isletme.ad} />}
       </div>
 
       {gorevAcik && <GorevIstekModal gorev={gorevAcik} onKapat={() => setGorevAcik(null)} />}

@@ -78,6 +78,7 @@ def init_db():
         "google_refresh_token TEXT",
         "google_token_expiry TEXT",
         "category TEXT",
+        "city TEXT",
     ]:
         try:
             cursor.execute(f"ALTER TABLE customers ADD COLUMN {kolon}")
@@ -178,13 +179,13 @@ def get_stats():
 
 # --- Müşteri Hesapları ---
 
-def create_customer(email: str, password_hash: str, salt: str, business_name: str, phone: str = None, category: str = None):
+def create_customer(email: str, password_hash: str, salt: str, business_name: str, phone: str = None, category: str = None, city: str = None):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        INSERT INTO customers (email, password_hash, salt, business_name, phone, category)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (email, password_hash, salt, business_name, phone, category))
+        INSERT INTO customers (email, password_hash, salt, business_name, phone, category, city)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (email, password_hash, salt, business_name, phone, category, city))
     conn.commit()
     conn.close()
 
@@ -200,7 +201,7 @@ def get_all_customers():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT id, email, business_name, phone, category, created_at,
+        SELECT id, email, business_name, phone, category, city, created_at,
                google_connected, google_email, google_account_name
         FROM customers ORDER BY created_at DESC
     """)
