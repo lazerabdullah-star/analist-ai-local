@@ -79,9 +79,9 @@ def get_userinfo(access_token: str) -> dict:
     return response.json()
 
 
-def get_business_account_name(access_token: str):
-    """Onay gerektirmeyen Account Management API ile bağlı hesabın adını çeker.
-    Erişim yoksa veya hata olursa None döner, bağlantı akışını bozmaz."""
+def get_business_account(access_token: str):
+    """Onay gerektirmeyen Account Management API ile bağlı hesabın id'sini ve adını çeker.
+    Erişim yoksa veya hata olursa (None, None) döner, bağlantı akışını bozmaz."""
     try:
         response = requests.get(
             "https://mybusinessaccountmanagement.googleapis.com/v1/accounts",
@@ -90,6 +90,40 @@ def get_business_account_name(access_token: str):
         )
         response.raise_for_status()
         accounts = response.json().get("accounts", [])
-        return accounts[0].get("accountName") if accounts else None
+        if not accounts:
+            return None, None
+        return accounts[0].get("name"), accounts[0].get("accountName")
+    except Exception:
+        return None, None
+
+
+def get_locations(access_token: str, account_id: str):
+    """Bağlı hesabın gerçek işletme konumlarını (Business Information API) çeker.
+    Erişim yoksa veya hata olursa boş liste döner."""
+    read_mask = "title,phoneNumbers,storefrontAddress,categories,websiteUri,regularHours"
+    try:
+        response = requests.get(
+            f"https://mybusinessbusinessinformation.googleapis.com/v1/{account_id}/locations",
+            headers={"Authorization": f"Bearer {access_token}"},
+            params={"readMask": read_mask, "pageSize": 5},
+            timeout=10,
+        )
+        response.raise_for_status()
+        return response.json().get("locations", [])
+    except Exception:
+        return []
+
+
+def refresh_access_token(refresh_token: str):
+    """Süresi dolan access_token'ı refresh_token ile yeniler. Başarısız olursa None döner."""
+    try:
+        response = requests.post("https://oauth2.googleapis.com/token", data={
+            "refresh_token": refresh_token,
+            "client_id": GOOGLE_OAUTH_CLIENT_ID,
+            "client_secret": GOOGLE_OAUTH_CLIENT_SECRET,
+            "grant_type": "refresh_token",
+        }, timeout=10)
+        response.raise_for_status()
+        return response.json()
     except Exception:
         return None

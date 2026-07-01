@@ -6,6 +6,7 @@ load_dotenv()
 import secrets
 import uuid
 from contextlib import asynccontextmanager
+from datetime import datetime, timedelta, timezone
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
@@ -22,7 +23,7 @@ from database.db import (
     init_db, save_business, get_all_businesses, get_stats,
     create_customer, get_customer_by_email, create_session, get_customer_by_token,
     create_customer_request, get_all_customer_requests,
-    save_google_tokens, clear_google_tokens,
+    save_google_tokens, clear_google_tokens, update_google_access_token,
     get_all_customers, delete_customer, reset_customer_password
 )
 
@@ -241,19 +242,54 @@ async def musteri_panel(customer: dict = Depends(verify_customer)):
         "city": customer["city"]
     }
 
+def get_valid_google_access_token(customer: dict):
+    """Müşterinin Google access_token'ını döner, süresi dolmuşsa refresh_token ile yeniler"""
+    expiry = customer.get("google_token_expiry")
+    if expiry:
+        try:
+            if datetime.fromisoformat(expiry) > datetime.now(timezone.utc) + timedelta(seconds=30):
+                return customer["google_access_token"]
+        except ValueError:
+            pass
+
+    if not customer.get("google_refresh_token"):
+        return None
+
+    tokens = google_oauth.refresh_access_token(customer["google_refresh_token"])
+    if not tokens:
+        return None
+
+    new_expiry = (datetime.now(timezone.utc) + timedelta(seconds=tokens.get("expires_in", 3600))).isoformat()
+    update_google_access_token(customer["id"], tokens["access_token"], new_expiry)
+    return tokens["access_token"]
+
 @app.get("/musteri/gercek-veri")
 async def musteri_gercek_veri(customer: dict = Depends(verify_customer)):
-    """Müşterinin Google Places üzerindeki gerçek işletme ve rakip verisini getirir"""
+    """Müşterinin Google Places üzerindeki gerçek işletme ve rakip verisini getirir.
+    Google bağlıysa, arama için Business Information API'den gelen gerçek işletme
+    adı/şehri kullanılır (admin'in elle girdiği bilgiden daha güvenilir)."""
     isletme = {"found": False}
     rakip = {"found": False}
 
-    if customer["business_name"]:
-        place = find_business_by_name(customer["business_name"], customer["city"], places_key)
+    arama_adi = customer["business_name"]
+    arama_sehir = customer["city"]
+
+    if customer.get("google_connected") and customer.get("google_account_id"):
+        access_token = get_valid_google_access_token(customer)
+        if access_token:
+            locations = google_oauth.get_locations(access_token, customer["google_account_id"])
+            if locations:
+                loc = locations[0]
+                arama_adi = loc.get("title") or arama_adi
+                arama_sehir = loc.get("storefrontAddress", {}).get("locality") or arama_sehir
+
+    if arama_adi:
+        place = find_business_by_name(arama_adi, arama_sehir, places_key)
         if place:
             completeness = check_completeness(place)
             isletme = {
                 "found": True,
-                "ad": place.get("displayName", {}).get("text", customer["business_name"]),
+                "ad": place.get("displayName", {}).get("text", arama_adi),
                 "adres": place.get("formattedAddress"),
                 "telefon": place.get("nationalPhoneNumber"),
                 "website": place.get("websiteUri"),
@@ -265,8 +301,8 @@ async def musteri_gercek_veri(customer: dict = Depends(verify_customer)):
                 "missing": completeness["missing"]
             }
 
-            if customer["category"] and customer["city"]:
-                rakip_place = find_top_competitor(customer["category"], customer["city"], customer["business_name"], places_key)
+            if customer["category"] and arama_sehir:
+                rakip_place = find_top_competitor(customer["category"], arama_sehir, arama_adi, places_key)
                 if rakip_place:
                     rakip = {
                         "found": True,
@@ -326,14 +362,16 @@ async def google_callback(code: str = None, state: str = None):
     try:
         tokens = google_oauth.exchange_code_for_tokens(code)
         userinfo = google_oauth.get_userinfo(tokens["access_token"])
-        account_name = google_oauth.get_business_account_name(tokens["access_token"])
+        account_id, account_name = google_oauth.get_business_account(tokens["access_token"])
+        expiry_iso = (datetime.now(timezone.utc) + timedelta(seconds=tokens.get("expires_in", 3600))).isoformat()
         save_google_tokens(
             customer_id,
             tokens["access_token"],
             tokens.get("refresh_token"),
-            str(tokens.get("expires_in")),
+            expiry_iso,
             userinfo.get("email"),
-            account_name
+            account_name,
+            account_id
         )
     except Exception:
         return RedirectResponse(f"{FRONTEND_URL}/panel?google=error")

@@ -79,6 +79,7 @@ def init_db():
         "google_token_expiry TEXT",
         "category TEXT",
         "city TEXT",
+        "google_account_id TEXT",
     ]:
         try:
             cursor.execute(f"ALTER TABLE customers ADD COLUMN {kolon}")
@@ -248,7 +249,7 @@ def get_customer_by_token(token: str):
 
 # --- Google İşletme Profili Bağlantısı ---
 
-def save_google_tokens(customer_id: int, access_token: str, refresh_token: str, expiry_iso: str, email: str, account_name: str = None):
+def save_google_tokens(customer_id: int, access_token: str, refresh_token: str, expiry_iso: str, email: str, account_name: str = None, account_id: str = None):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -256,11 +257,21 @@ def save_google_tokens(customer_id: int, access_token: str, refresh_token: str, 
             google_connected = 1,
             google_email = ?,
             google_account_name = ?,
+            google_account_id = ?,
             google_access_token = ?,
             google_refresh_token = ?,
             google_token_expiry = ?
         WHERE id = ?
-    """, (email, account_name, access_token, refresh_token, expiry_iso, customer_id))
+    """, (email, account_name, account_id, access_token, refresh_token, expiry_iso, customer_id))
+    conn.commit()
+    conn.close()
+
+def update_google_access_token(customer_id: int, access_token: str, expiry_iso: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE customers SET google_access_token = ?, google_token_expiry = ? WHERE id = ?
+    """, (access_token, expiry_iso, customer_id))
     conn.commit()
     conn.close()
 
@@ -272,6 +283,7 @@ def clear_google_tokens(customer_id: int):
             google_connected = 0,
             google_email = NULL,
             google_account_name = NULL,
+            google_account_id = NULL,
             google_access_token = NULL,
             google_refresh_token = NULL,
             google_token_expiry = NULL
