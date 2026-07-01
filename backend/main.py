@@ -3,6 +3,7 @@ import uuid
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -13,10 +14,13 @@ from dotenv import load_dotenv
 from modules.scanner.google_places import search_businesses
 from modules.scanner.completeness import check_completeness
 from modules.auth.security import hash_password, verify_password
+from modules.auth import google_oauth
 from database.db import (
     init_db, save_business, get_all_businesses, get_stats,
     create_customer, get_customer_by_email, create_session, get_customer_by_token,
-    create_customer_request, get_all_customer_requests
+    create_customer_request, get_all_customer_requests,
+    save_google_tokens, clear_google_tokens,
+    get_all_customers, delete_customer, reset_customer_password
 )
 
 load_dotenv()
@@ -179,6 +183,27 @@ async def musteri_ekle(data: MusteriEkleRequest):
     create_customer(data.email, pw_hash, salt, data.business_name, data.phone)
     return {"success": True, "message": f"{data.business_name} için müşteri hesabı oluşturuldu"}
 
+@app.get("/admin/musteriler", dependencies=[Depends(verify_user)])
+async def musteri_listele():
+    """Admin, tüm müşteri hesaplarını listeler (şifre hash'leri hariç)"""
+    return {"customers": get_all_customers()}
+
+@app.delete("/admin/musteriler/{customer_id}", dependencies=[Depends(verify_user)])
+async def musteri_sil(customer_id: int):
+    """Admin, bir müşteri hesabını ve ona bağlı oturum/talepleri siler"""
+    delete_customer(customer_id)
+    return {"success": True}
+
+class SifreSifirlaRequest(BaseModel):
+    new_password: str
+
+@app.post("/admin/musteriler/{customer_id}/sifre-sifirla", dependencies=[Depends(verify_user)])
+async def musteri_sifre_sifirla(customer_id: int, data: SifreSifirlaRequest):
+    """Admin, müşterinin şifresini yeni bir şifreyle değiştirir (eski şifre görüntülenemez)"""
+    salt, pw_hash = hash_password(data.new_password)
+    reset_customer_password(customer_id, pw_hash, salt)
+    return {"success": True}
+
 # --- Müşteri Girişi ve Paneli ---
 
 class MusteriGirisRequest(BaseModel):
@@ -236,3 +261,52 @@ async def musteri_foto_istek(file: UploadFile = File(...), customer: dict = Depe
 async def admin_istekler():
     """Admin, müşterilerden gelen tüm güncelleme taleplerini görür"""
     return {"requests": get_all_customer_requests()}
+
+# --- Google İşletme Profili Bağlantısı (OAuth) ---
+
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
+
+@app.get("/musteri/google/connect")
+async def google_connect(customer: dict = Depends(verify_customer)):
+    """Müşteriyi Google izin ekranına yönlendirecek URL'i döner"""
+    state = google_oauth.build_state(customer["id"])
+    return {"auth_url": google_oauth.get_auth_url(state)}
+
+@app.get("/musteri/google/callback")
+async def google_callback(code: str = None, state: str = None):
+    """Google, izin sonrası tarayıcıyı buraya yönlendirir"""
+    customer_id = google_oauth.verify_state(state) if state else None
+    if not customer_id or not code:
+        return RedirectResponse(f"{FRONTEND_URL}/panel?google=error")
+
+    try:
+        tokens = google_oauth.exchange_code_for_tokens(code)
+        userinfo = google_oauth.get_userinfo(tokens["access_token"])
+        account_name = google_oauth.get_business_account_name(tokens["access_token"])
+        save_google_tokens(
+            customer_id,
+            tokens["access_token"],
+            tokens.get("refresh_token"),
+            str(tokens.get("expires_in")),
+            userinfo.get("email"),
+            account_name
+        )
+    except Exception:
+        return RedirectResponse(f"{FRONTEND_URL}/panel?google=error")
+
+    return RedirectResponse(f"{FRONTEND_URL}/panel?google=connected")
+
+@app.get("/musteri/google/status")
+async def google_status(customer: dict = Depends(verify_customer)):
+    """Giriş yapmış müşterinin Google bağlantı durumunu döner"""
+    return {
+        "connected": bool(customer.get("google_connected")),
+        "email": customer.get("google_email"),
+        "account_name": customer.get("google_account_name")
+    }
+
+@app.post("/musteri/google/disconnect")
+async def google_disconnect(customer: dict = Depends(verify_customer)):
+    """Müşteri Google bağlantısını kaldırır"""
+    clear_google_tokens(customer["id"])
+    return {"success": True}

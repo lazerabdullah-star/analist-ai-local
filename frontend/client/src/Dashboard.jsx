@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import GorevIstekModal from './GorevIstekModal'
+import GoogleBaglanti from './GoogleBaglanti'
 
 // ─── Demo veri ────────────────────────────────────────────────────────────────
 const DEMO = {
@@ -221,6 +222,8 @@ function AnaSayfa({ mobil, setTab, onGorevEkle }) {
   const ist = DEMO.istatistik
   return (
     <div>
+      <GoogleBaglanti />
+
       {/* AI Özet */}
       <div style={{
         background: 'linear-gradient(135deg, #1E3A8A, #3B5BDB)',

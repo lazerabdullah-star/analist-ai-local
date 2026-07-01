@@ -70,6 +70,19 @@ def init_db():
         )
     """)
 
+    for kolon in [
+        "google_connected INTEGER DEFAULT 0",
+        "google_email TEXT",
+        "google_account_name TEXT",
+        "google_access_token TEXT",
+        "google_refresh_token TEXT",
+        "google_token_expiry TEXT",
+    ]:
+        try:
+            cursor.execute(f"ALTER TABLE customers ADD COLUMN {kolon}")
+        except sqlite3.OperationalError:
+            pass
+
     conn.commit()
     conn.close()
 
@@ -182,6 +195,34 @@ def get_customer_by_email(email: str):
     conn.close()
     return dict(row) if row else None
 
+def get_all_customers():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, email, business_name, phone, created_at,
+               google_connected, google_email, google_account_name
+        FROM customers ORDER BY created_at DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]
+
+def delete_customer(customer_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM customer_requests WHERE customer_id = ?", (customer_id,))
+    cursor.execute("DELETE FROM customer_sessions WHERE customer_id = ?", (customer_id,))
+    cursor.execute("DELETE FROM customers WHERE id = ?", (customer_id,))
+    conn.commit()
+    conn.close()
+
+def reset_customer_password(customer_id: int, password_hash: str, salt: str):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE customers SET password_hash = ?, salt = ? WHERE id = ?", (password_hash, salt, customer_id))
+    conn.commit()
+    conn.close()
+
 def create_session(customer_id: int) -> str:
     token = secrets.token_urlsafe(32)
     conn = get_connection()
@@ -202,6 +243,40 @@ def get_customer_by_token(token: str):
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
+
+# --- Google İşletme Profili Bağlantısı ---
+
+def save_google_tokens(customer_id: int, access_token: str, refresh_token: str, expiry_iso: str, email: str, account_name: str = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE customers SET
+            google_connected = 1,
+            google_email = ?,
+            google_account_name = ?,
+            google_access_token = ?,
+            google_refresh_token = ?,
+            google_token_expiry = ?
+        WHERE id = ?
+    """, (email, account_name, access_token, refresh_token, expiry_iso, customer_id))
+    conn.commit()
+    conn.close()
+
+def clear_google_tokens(customer_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE customers SET
+            google_connected = 0,
+            google_email = NULL,
+            google_account_name = NULL,
+            google_access_token = NULL,
+            google_refresh_token = NULL,
+            google_token_expiry = NULL
+        WHERE id = ?
+    """, (customer_id,))
+    conn.commit()
+    conn.close()
 
 # --- Müşteri Talepleri (fotoğraf / web sitesi / hizmet ekleme istekleri) ---
 
