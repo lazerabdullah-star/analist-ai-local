@@ -400,6 +400,7 @@ export default function Dashboard({ musteri, onCikis }) {
   if (musteri) {
     DEMO.isletme.ad = musteri.business_name || DEMO.isletme.ad
     DEMO.isletme.telefon = musteri.phone || DEMO.isletme.telefon
+    DEMO.isletme.kategori = musteri.category || DEMO.isletme.kategori
   }
 
   const tablar = [

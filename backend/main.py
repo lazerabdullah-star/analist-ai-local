@@ -173,6 +173,7 @@ class MusteriEkleRequest(BaseModel):
     password: str
     business_name: str
     phone: str = None
+    category: str = None
 
 @app.post("/admin/musteriler", dependencies=[Depends(verify_user)])
 async def musteri_ekle(data: MusteriEkleRequest):
@@ -181,7 +182,7 @@ async def musteri_ekle(data: MusteriEkleRequest):
         raise HTTPException(status_code=400, detail="Bu email zaten kayıtlı")
 
     salt, pw_hash = hash_password(data.password)
-    create_customer(data.email, pw_hash, salt, data.business_name, data.phone)
+    create_customer(data.email, pw_hash, salt, data.business_name, data.phone, data.category)
     return {"success": True, "message": f"{data.business_name} için müşteri hesabı oluşturuldu"}
 
 @app.get("/admin/musteriler", dependencies=[Depends(verify_user)])
@@ -223,7 +224,8 @@ async def musteri_giris(data: MusteriGirisRequest):
         "token": token,
         "business_name": customer["business_name"],
         "phone": customer["phone"],
-        "email": customer["email"]
+        "email": customer["email"],
+        "category": customer["category"]
     }
 
 @app.get("/musteri/panel")
@@ -232,7 +234,8 @@ async def musteri_panel(customer: dict = Depends(verify_customer)):
     return {
         "business_name": customer["business_name"],
         "phone": customer["phone"],
-        "email": customer["email"]
+        "email": customer["email"],
+        "category": customer["category"]
     }
 
 # --- Müşteri Talepleri (fotoğraf / web sitesi / hizmet ekleme) ---

@@ -71,7 +71,9 @@ export default function MusteriListesi({ onKapat }) {
           <div key={m.id} style={{ border: '1px solid #E2E8F0', borderRadius: 10, padding: 14, marginBottom: 10 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>{m.business_name}</div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>
+                  {m.business_name} {m.category && <span style={{ color: '#64748B', fontWeight: 400 }}>• {m.category}</span>}
+                </div>
                 <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{m.email} {m.phone ? `• ${m.phone}` : ''}</div>
                 {m.google_connected ? (
                   <div style={{ fontSize: 11, color: '#16A34A', marginTop: 4 }}>✓ Google Bağlı — {m.google_account_name || m.google_email}</div>
