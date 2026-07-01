@@ -13,6 +13,9 @@ __pycache__/
 # Veritabanı
 database/*.db
 
+# Müşterilerin yüklediği fotoğraflar (yerelde test amaçlı, Railway'de /tmp'de tutulur)
+backend/uploads/
+
 # Node
 frontend/client/node_modules/
 

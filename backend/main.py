@@ -1,8 +1,10 @@
 import secrets
+import uuid
 from contextlib import asynccontextmanager
-from fastapi import Depends, FastAPI, Header, HTTPException, status
+from fastapi import Depends, FastAPI, File, Header, HTTPException, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 import google.generativeai as genai
 import os
@@ -13,7 +15,8 @@ from modules.scanner.completeness import check_completeness
 from modules.auth.security import hash_password, verify_password
 from database.db import (
     init_db, save_business, get_all_businesses, get_stats,
-    create_customer, get_customer_by_email, create_session, get_customer_by_token
+    create_customer, get_customer_by_email, create_session, get_customer_by_token,
+    create_customer_request, get_all_customer_requests
 )
 
 load_dotenv()
@@ -22,6 +25,9 @@ gemini_key = os.getenv("GEMINI_API_KEY")
 places_key = os.getenv("GOOGLE_PLACES_API_KEY")
 APP_USERNAME = os.getenv("APP_USERNAME", "atoprak")
 APP_PASSWORD = os.getenv("APP_PASSWORD", "atoprak2121")
+
+UPLOAD_DIR = "/tmp/uploads" if os.environ.get("RAILWAY_ENVIRONMENT") else os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 genai.configure(api_key=gemini_key)
 
@@ -61,6 +67,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 # --- Mevcut: Yorum Analizi ---
 
@@ -200,3 +208,31 @@ async def musteri_panel(customer: dict = Depends(verify_customer)):
         "phone": customer["phone"],
         "email": customer["email"]
     }
+
+# --- Müşteri Talepleri (fotoğraf / web sitesi / hizmet ekleme) ---
+
+class MusteriIstekRequest(BaseModel):
+    type: str
+    value: str
+
+@app.post("/musteri/istek")
+async def musteri_istek(data: MusteriIstekRequest, customer: dict = Depends(verify_customer)):
+    """Müşteri, web sitesi/hizmet gibi metin tabanlı bir güncelleme talebi gönderir"""
+    create_customer_request(customer["id"], data.type, data.value)
+    return {"success": True, "message": "Talebiniz alındı"}
+
+@app.post("/musteri/istek/foto")
+async def musteri_foto_istek(file: UploadFile = File(...), customer: dict = Depends(verify_customer)):
+    """Müşteri bir fotoğraf yükleme talebi gönderir"""
+    uzanti = os.path.splitext(file.filename)[1]
+    dosya_adi = f"{uuid.uuid4().hex}{uzanti}"
+    with open(os.path.join(UPLOAD_DIR, dosya_adi), "wb") as f:
+        f.write(await file.read())
+
+    create_customer_request(customer["id"], "foto", dosya_adi)
+    return {"success": True, "message": "Fotoğraf alındı"}
+
+@app.get("/admin/istekler", dependencies=[Depends(verify_user)])
+async def admin_istekler():
+    """Admin, müşterilerden gelen tüm güncelleme taleplerini görür"""
+    return {"requests": get_all_customer_requests()}

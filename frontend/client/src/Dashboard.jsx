@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import GorevIstekModal from './GorevIstekModal'
 
 // ─── Demo veri ────────────────────────────────────────────────────────────────
 const DEMO = {
@@ -33,10 +34,10 @@ const DEMO = {
     { id: 4, ad: 'Fatma Ş.',  yildiz: 5, metin: 'Harika bir klinik! Çok temiz ve modern. Herkese öneririm.', tarih: '2 hafta önce', cevapVar: true  },
   ],
   gorevler: [
-    { id: 1, baslik: '3 yoruma cevap verilmedi',          aciklama: 'Cevapsız yorumlar müşteri güvenini düşürür.',  oncelik: 'yüksek', ikon: '💬' },
-    { id: 2, baslik: '42 gündür fotoğraf yüklenmedi',     aciklama: 'Rakibiniz bu hafta 5 yeni fotoğraf ekledi.',   oncelik: 'yüksek', ikon: '📷' },
-    { id: 3, baslik: 'Web sitesi bağlantısı eksik',        aciklama: 'Web sitesi olan işletmeler %35 daha fazla tıklanıyor.', oncelik: 'orta', ikon: '🌐' },
-    { id: 4, baslik: 'Hizmet listesi güncellenmeli',       aciklama: 'Sunduğunuz tüm hizmetleri ekleyin.',           oncelik: 'düşük', ikon: '📋' },
+    { id: 1, baslik: '3 yoruma cevap verilmedi',          aciklama: 'Cevapsız yorumlar müşteri güvenini düşürür.',  oncelik: 'yüksek', ikon: '💬', tur: 'yorum' },
+    { id: 2, baslik: '42 gündür fotoğraf yüklenmedi',     aciklama: 'Rakibiniz bu hafta 5 yeni fotoğraf ekledi.',   oncelik: 'yüksek', ikon: '📷', tur: 'foto' },
+    { id: 3, baslik: 'Web sitesi bağlantısı eksik',        aciklama: 'Web sitesi olan işletmeler %35 daha fazla tıklanıyor.', oncelik: 'orta', ikon: '🌐', tur: 'website' },
+    { id: 4, baslik: 'Hizmet listesi güncellenmeli',       aciklama: 'Sunduğunuz tüm hizmetleri ekleyin.',           oncelik: 'düşük', ikon: '📋', tur: 'hizmet' },
   ],
   aiCevaplar: {
     1: 'Değerli Mehmet Bey, güzel yorumunuz için teşekkür ederiz. Sizi kliniğimizde ağırlamaktan mutluluk duyduk. Tekrar görüşmek dileğiyle! 😊',
@@ -203,8 +204,20 @@ function YorumKarti({ yorum }) {
   )
 }
 
+// ─── Görev Ekle Butonu ────────────────────────────────────────────────────────
+function GorevEkleButonu({ onClick }) {
+  return (
+    <button onClick={onClick} title="Ekle" style={{
+      width: 26, height: 26, borderRadius: '50%', border: 'none', flexShrink: 0,
+      background: '#22C55E', color: '#fff', fontSize: 16, fontWeight: 700,
+      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      boxShadow: '0 0 0 4px #DCFCE7'
+    }}>+</button>
+  )
+}
+
 // ─── Ana Sayfa Tab ─────────────────────────────────────────────────────────────
-function AnaSayfa({ mobil }) {
+function AnaSayfa({ mobil, setTab, onGorevEkle }) {
   const ist = DEMO.istatistik
   return (
     <div>
@@ -267,9 +280,10 @@ function AnaSayfa({ mobil }) {
                   <div style={{ fontSize: 12, color: '#64748B', marginTop: 2 }}>{g.aciklama}</div>
                 </div>
                 <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 7px', borderRadius: 99,
-                  background: bg, color: tc, marginLeft: 'auto', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                  background: bg, color: tc, whiteSpace: 'nowrap', flexShrink: 0, marginLeft: 'auto' }}>
                   {g.oncelik}
                 </span>
+                <GorevEkleButonu onClick={() => g.tur === 'yorum' ? setTab('yorum') : onGorevEkle(g)} />
               </div>
             )
           })}
@@ -377,6 +391,7 @@ function Rakip({ mobil }) {
 // ─── Ana Dashboard ────────────────────────────────────────────────────────────
 export default function Dashboard({ musteri, onCikis }) {
   const [tab, setTab] = useState('ana')
+  const [gorevAcik, setGorevAcik] = useState(null)
   const { mobil, tablet } = useEkran()
 
   if (musteri) {
@@ -439,10 +454,12 @@ export default function Dashboard({ musteri, onCikis }) {
 
       {/* İçerik */}
       <div style={{ maxWidth: 900, margin: '0 auto', padding: mobil ? '16px 12px' : '24px 16px' }}>
-        {tab === 'ana'   && <AnaSayfa mobil={mobil} />}
+        {tab === 'ana'   && <AnaSayfa mobil={mobil} setTab={setTab} onGorevEkle={setGorevAcik} />}
         {tab === 'yorum' && <Yorumlar />}
         {tab === 'rakip' && <Rakip mobil={mobil} />}
       </div>
+
+      {gorevAcik && <GorevIstekModal gorev={gorevAcik} onKapat={() => setGorevAcik(null)} />}
 
       {/* Mobil alt navigasyon */}
       {mobil && (

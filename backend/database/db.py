@@ -59,6 +59,17 @@ def init_db():
         )
     """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS customer_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_id INTEGER NOT NULL,
+            type TEXT NOT NULL,
+            value TEXT,
+            status TEXT DEFAULT 'bekliyor',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
 
@@ -191,3 +202,28 @@ def get_customer_by_token(token: str):
     row = cursor.fetchone()
     conn.close()
     return dict(row) if row else None
+
+# --- Müşteri Talepleri (fotoğraf / web sitesi / hizmet ekleme istekleri) ---
+
+def create_customer_request(customer_id: int, type: str, value: str = None):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO customer_requests (customer_id, type, value)
+        VALUES (?, ?, ?)
+    """, (customer_id, type, value))
+    conn.commit()
+    conn.close()
+
+def get_all_customer_requests():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT customer_requests.*, customers.business_name, customers.email
+        FROM customer_requests
+        JOIN customers ON customers.id = customer_requests.customer_id
+        ORDER BY customer_requests.created_at DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return [dict(row) for row in rows]

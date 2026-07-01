@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import MusteriEkle from './MusteriEkle'
+import MusteriTalepleri from './MusteriTalepleri'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
 
@@ -221,6 +222,7 @@ function IsletmeKarti({ isletme, index }) {
 
 export default function App() {
   const [musteriEkleAcik, setMusteriEkleAcik] = useState(false)
+  const [talepAcik, setTalepAcik] = useState(false)
   const [sehir, setSehir]           = useState('İstanbul')
   const [ilce, setIlce]             = useState('')
   const [kategoriYazisi, setKategoriYazisi] = useState('')
@@ -337,6 +339,11 @@ export default function App() {
               {tumIsletmeler.length} işletme veritabanında
             </span>
           )}
+          <button onClick={() => setTalepAcik(true)} style={{
+            fontSize: 12, fontWeight: 700, color: '#1E40AF',
+            background: '#fff', border: 'none', borderRadius: 8,
+            padding: '6px 14px', cursor: 'pointer'
+          }}>📥 Talepler</button>
           <button onClick={() => setMusteriEkleAcik(true)} style={{
             fontSize: 12, fontWeight: 700, color: '#1E40AF',
             background: '#fff', border: 'none', borderRadius: 8,
@@ -351,6 +358,7 @@ export default function App() {
       </div>
 
       {musteriEkleAcik && <MusteriEkle onKapat={() => setMusteriEkleAcik(false)} />}
+      {talepAcik && <MusteriTalepleri onKapat={() => setTalepAcik(false)} />}
 
       <div style={{ maxWidth: 900, margin: '0 auto', padding: '28px 16px' }}>
 
