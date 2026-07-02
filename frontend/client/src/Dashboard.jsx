@@ -297,7 +297,13 @@ export default function Dashboard({ musteri, onCikis }) {
         const res = await fetch(`${API_URL}/musteri/gercek-veri`, {
           headers: { Authorization: `Bearer ${token}` }
         })
-        if (res.ok) setGercek(await res.json())
+        if (res.ok) {
+          setGercek(await res.json())
+        } else if (res.status === 401) {
+          sessionStorage.removeItem('musteriToken')
+          sessionStorage.removeItem('musteriBilgi')
+          window.location.reload()
+        }
       } finally {
         setGercekYukleniyor(false)
       }

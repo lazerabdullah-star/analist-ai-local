@@ -32,7 +32,8 @@ places_key = os.getenv("GOOGLE_PLACES_API_KEY")
 APP_USERNAME = os.getenv("APP_USERNAME", "atoprak")
 APP_PASSWORD = os.getenv("APP_PASSWORD", "atoprak2121")
 
-UPLOAD_DIR = "/tmp/uploads" if os.environ.get("RAILWAY_ENVIRONMENT") else os.path.join(os.path.dirname(__file__), "uploads")
+_volume_dir = os.environ.get("RAILWAY_VOLUME_MOUNT_PATH")
+UPLOAD_DIR = os.path.join(_volume_dir, "uploads") if _volume_dir else os.path.join(os.path.dirname(__file__), "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 genai.configure(api_key=gemini_key)

@@ -12,7 +12,13 @@ export default function GoogleBaglanti() {
     const res = await fetch(`${API_URL}/musteri/google/status`, {
       headers: { Authorization: `Bearer ${token}` }
     })
-    if (res.ok) setDurum(await res.json())
+    if (res.ok) {
+      setDurum(await res.json())
+    } else if (res.status === 401) {
+      sessionStorage.removeItem('musteriToken')
+      sessionStorage.removeItem('musteriBilgi')
+      window.location.reload()
+    }
   }
 
   useEffect(() => {
